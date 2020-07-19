@@ -1,0 +1,9 @@
+amazon-ecs:1.36
+aws-credentials:1.28
+cloudbees-folder:6.12
+pipeline-utility-steps:2.6.1
+pipeline-aws:1.41
+audit-trail:3.5
+blueocean:1.23.2
+configuration-as-code:1.41
+job-dsl:1.77

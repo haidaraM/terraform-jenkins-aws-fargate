@@ -1,0 +1,12 @@
+# This is just an example of a Jenkins agent
+FROM jenkins/inbound-agent:alpine
+
+# use root user to be able to install packages
+USER root
+
+# Install some packages
+RUN apk add --no-cache py3-pip python3 curl jq && pip3 install awscli
+
+# Back to Jenkins (Best practice)
+USER jenkins
+

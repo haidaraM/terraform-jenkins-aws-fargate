@@ -1,0 +1,34 @@
+[
+  {
+    "user": "${jenkins_user_uid}:${jenkins_user_uid}",
+    "mountPoints": [
+      {
+        "sourceVolume": "${efs_volume_name}",
+        "containerPath": "${jenkins_home}"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": ${jenkins_http_port},
+        "protocol": "tcp"
+      },
+      {
+        "containerPort": ${jenkins_jnlp_port},
+        "protocol": "tcp"
+      }
+    ],
+    "essential": true,
+    "name": "${jenkins_master_container_name}",
+    "environment": ${env_vars},
+    "image": "${image}",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group_name}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "service"
+      }
+    },
+    "secrets": []
+  }
+]

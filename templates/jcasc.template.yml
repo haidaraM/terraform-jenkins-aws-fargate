@@ -1,0 +1,149 @@
+jenkins:
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin (JCasC)."
+  agentProtocols:
+    - "JNLP4-connect"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+  clouds:
+    - ecs:
+        cluster: "${ecs_cluster_arn}"
+        jenkinsUrl: "${jenkins_nlb_url}/"
+        name: "fargate"
+        regionName: "${region_name}"
+        credentialsId: "" # not needed but required for jcasc plugin. A role will be used to access the resources.
+        allowedOverrides: "inheritFrom,label,memory,cpu,image"
+        templates:
+          - assignPublicIp: false
+            cpu: ${example_agent_cpu_memory["cpu"]}
+            image: "${example_agent_docker_image}"
+            label: "${example_agent_label}"
+            launchType: "FARGATE"
+            platformVersion: "${fargate_platform_version}"
+            memory: 0
+            memoryReservation: ${example_agent_cpu_memory["memory"]}
+            networkMode: "awsvpc" # awsvpc is required for fargate
+            privileged: false
+            remoteFSRoot: "/home/jenkins"
+            securityGroups: "${agents_sg_ids}"
+            sharedMemorySize: 0
+            subnets: "${agents_subnet_ids}"
+            templateName: "example-template"
+            uniqueRemoteFSRoot: false
+            taskrole: "${agents_task_role_arn}"
+            executionRole: "${agents_execution_role_arn}"
+            logDriver: "awslogs"
+            logDriverOptions:
+              - name: "awslogs-region"
+                value: "${region_name}"
+              - name: "awslogs-group"
+                value: "${agents_log_group}"
+              - name: "awslogs-stream-prefix"
+                value: "task"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+  disableRememberMe: false
+  markupFormatter: "plainText"
+  mode: NORMAL
+  myViewsTabBar: "standard"
+  numExecutors: ${jenkins_master_num_executors}
+  primaryView:
+    all:
+      name: "all"
+  projectNamingStrategy: "standard"
+  quietPeriod: 5
+  remotingSecurity:
+    enabled: true
+  scmCheckoutRetryCount: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: true
+      users:
+        - id: "admin"
+          name: "admin"
+          password: "${admin_password}"
+          description: "Jenkins admin user. Created with JCasC"
+          properties:
+            - mailer:
+                emailAddress: "admin@admin.com"
+  slaveAgentPort: ${jnlp_port}
+  updateCenter:
+    sites:
+      - id: "default"
+        url: "https://updates.jenkins.io/update-center.json"
+  views:
+    - all:
+        name: "all"
+  viewsTabBar: "standard"
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: true
+  sSHD:
+    port: -1
+unclassified:
+  bitbucketEndpointConfiguration:
+    endpoints:
+      - bitbucketCloudEndpoint:
+          enableCache: false
+          manageHooks: false
+          repositoriesCacheDuration: 0
+          teamCacheDuration: 0
+  buildDiscarders:
+    configuredBuildDiscarders:
+      - "jobBuildDiscarder"
+  defaultFolderConfiguration:
+    healthMetrics:
+      - worstChildHealthMetric:
+          recursive: true
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    hookUrl: "${jenkins_public_url}/github-webhook/"
+  gitSCM:
+    createAccountBasedOnEmail: false
+    showEntireCommitSummaryInChanges: false
+    useExistingAccountWithSameEmail: false
+  location:
+    adminAddress: "address not configured yet <nobody@nowhere>"
+    url: "${jenkins_public_url}/"
+  mailer:
+    charset: "UTF-8"
+    useSsl: false
+    useTls: false
+  pollSCM:
+    pollingThreadCount: 10
+tool:
+  git:
+    installations:
+      - home: "git"
+        name: "Default"
+jobs: # this requires the job-dsl plugin
+  - script: >
+      pipelineJob('example') {
+        description("An example of job configured with JCasC and Job DSL Plugins.")
+        definition {
+          cps {
+            sandbox()
+            script("""\
+              pipeline {
+                agent {
+                  label '${example_agent_label}'
+                }
+                stages {
+                  stage ('Print env vars') {
+                    steps {
+                      sh "aws sts get-caller-identity"
+                      sh "env"
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
