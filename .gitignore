@@ -36,3 +36,4 @@ terraform.rc
 .envrc
 jcas.yml
 jcas-from-jenkins.yaml
+.idea
