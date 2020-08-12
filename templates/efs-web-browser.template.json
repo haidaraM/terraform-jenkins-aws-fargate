@@ -1,0 +1,30 @@
+[
+  {
+    "user": "0:0",
+    "mountPoints": [
+      {
+        "sourceVolume": "${efs_volume_name}",
+        "containerPath": "${efs_mount_path}"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": ${container_port},
+        "protocol": "tcp"
+      }
+    ],
+    "essential": true,
+    "name": "cloud-cmd",
+    "environment": ${env_vars},
+    "image": "${image}",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group_name}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "service"
+      }
+    },
+    "secrets": []
+  }
+]

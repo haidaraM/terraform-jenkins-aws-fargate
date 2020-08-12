@@ -21,6 +21,15 @@ resource "aws_security_group_rule" "alb_ingress_http" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
+resource "aws_security_group_rule" "alb_efs_browser" {
+  security_group_id = aws_security_group.alb_security_group.id
+  from_port         = 8000
+  to_port           = 8000
+  protocol          = "tcp"
+  type              = "ingress"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "alb_ingress_https" {
   count             = var.route53_zone_name != "" ? 1 : 0
   security_group_id = aws_security_group.alb_security_group.id
@@ -115,4 +124,14 @@ resource "aws_security_group_rule" "allow_jenkins_to_efs" {
   type                     = "ingress"
   description              = "Jenkins Master access to EFS."
   source_security_group_id = aws_security_group.jenkins_master_sg.id
+}
+
+resource "aws_security_group_rule" "allow_web_browser_to_efs" {
+  security_group_id        = aws_security_group.efs.id
+  from_port                = 2049
+  to_port                  = 2049
+  protocol                 = "tcp"
+  type                     = "ingress"
+  description              = "EFS browser to EFS"
+  source_security_group_id = aws_security_group.efs_web_browser.id
 }
