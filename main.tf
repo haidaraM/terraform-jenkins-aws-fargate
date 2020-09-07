@@ -53,7 +53,7 @@ resource "aws_cloudwatch_log_group" "agents" {
 resource "aws_efs_file_system" "jenkins_conf" {
   performance_mode                = var.efs_performance_mode
   throughput_mode                 = var.efs_throughput_mode
-  provisioned_throughput_in_mibps = null
+  provisioned_throughput_in_mibps = var.efs_provisioned_throughput_in_mibps
   tags                            = merge({ "Name" : "jenkins-master-configuration" }, var.default_tags)
 
   lifecycle_policy {
