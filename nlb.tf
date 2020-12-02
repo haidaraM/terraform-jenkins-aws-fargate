@@ -28,8 +28,8 @@ resource "aws_lb_target_group" "nlb_agents_to_master_http" {
   }
 
   stickiness {
-    type    = "lb_cookie"
     enabled = false # nlb target group don't support stickiness
+    type    = "source_ip"
   }
 
   lifecycle {
@@ -68,8 +68,8 @@ resource "aws_lb_target_group" "nlb_agents_to_master_jnlp" {
   }
 
   stickiness {
-    type    = "lb_cookie"
     enabled = false # nlb don't support stickiness
+    type    = "source_ip"
   }
 
   lifecycle {
