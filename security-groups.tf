@@ -1,15 +1,15 @@
-resource "aws_security_group" "jenkins_master_sg" {
-  name        = "sgr-jenkins-master-service"
+resource "aws_security_group" "jenkins_controller_sg" {
+  name        = "sgr-jenkins-controller-service"
   description = "Jenkins Master ECS service security group."
   vpc_id      = var.vpc_id
-  tags        = merge({ "Name" : "sgr-jenkins-master-service" }, var.default_tags)
+  tags        = merge({ "Name" : "sgr-jenkins-controller-service" }, var.default_tags)
 }
 
 resource "aws_security_group" "alb_security_group" {
-  name        = "sgr-jenkins-master-alb"
+  name        = "sgr-jenkins-controller-alb"
   description = "Jenkins Master ALB security group."
   vpc_id      = var.vpc_id
-  tags        = merge({ "Name" : "sgr-jenkins-master-alb" }, var.default_tags)
+  tags        = merge({ "Name" : "sgr-jenkins-controller-alb" }, var.default_tags)
 }
 
 resource "aws_security_group_rule" "alb_ingress_http" {
@@ -40,10 +40,10 @@ resource "aws_security_group_rule" "alb_egress_all" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "jenkins_master_ingress_alb" {
-  security_group_id        = aws_security_group.jenkins_master_sg.id
-  from_port                = var.master_listening_port
-  to_port                  = var.master_listening_port
+resource "aws_security_group_rule" "jenkins_controller_ingress_alb" {
+  security_group_id        = aws_security_group.jenkins_controller_sg.id
+  from_port                = var.controller_listening_port
+  to_port                  = var.controller_listening_port
   protocol                 = "tcp"
   type                     = "ingress"
   source_security_group_id = aws_security_group.alb_security_group.id
@@ -52,29 +52,29 @@ resource "aws_security_group_rule" "jenkins_master_ingress_alb" {
 
 resource "aws_security_group_rule" "allow_agents_to_jks_jnlp_port" {
   count             = length(var.private_subnets)
-  security_group_id = aws_security_group.jenkins_master_sg.id
-  from_port         = var.master_jnlp_port
-  to_port           = var.master_jnlp_port
+  security_group_id = aws_security_group.jenkins_controller_sg.id
+  from_port         = var.controller_jnlp_port
+  to_port           = var.controller_jnlp_port
   protocol          = "tcp"
   type              = "ingress"
-  cidr_blocks       = list("${data.aws_network_interface.private_nlb_network_interface[count.index].private_ip}/32")
+  cidr_blocks       = ["${data.aws_network_interface.private_nlb_network_interface[count.index].private_ip}/32"]
   description       = "From NLB to Jenkins Master JNLP via ENI ${data.aws_network_interface.private_nlb_network_interface[count.index].id}."
 }
 
 # When using a private nlb we need to have this rule for nlb health check to work.
 resource "aws_security_group_rule" "from_private_nlb_network_interfaces" {
   count             = length(var.private_subnets)
-  security_group_id = aws_security_group.jenkins_master_sg.id
-  from_port         = var.master_listening_port
-  to_port           = var.master_listening_port
+  security_group_id = aws_security_group.jenkins_controller_sg.id
+  from_port         = var.controller_listening_port
+  to_port           = var.controller_listening_port
   protocol          = "tcp"
   type              = "ingress"
-  cidr_blocks       = list("${data.aws_network_interface.private_nlb_network_interface[count.index].private_ip}/32")
+  cidr_blocks       = ["${data.aws_network_interface.private_nlb_network_interface[count.index].private_ip}/32"]
   description       = "From NLB to Jenkins Master HTTP via ENI ${data.aws_network_interface.private_nlb_network_interface[count.index].id}. Required for health check."
 }
 
-resource "aws_security_group_rule" "master_egress_all" {
-  security_group_id = aws_security_group.jenkins_master_sg.id
+resource "aws_security_group_rule" "controller_egress_all" {
+  security_group_id = aws_security_group.jenkins_controller_sg.id
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
@@ -101,10 +101,10 @@ resource "aws_security_group_rule" "jenkins_agent_egress" {
 
 ### EFS
 resource "aws_security_group" "efs" {
-  name        = "sgr-jenkins-master-efs"
+  name        = "sgr-jenkins-controller-efs"
   description = "Jenkins Master EFS security group."
   vpc_id      = var.vpc_id
-  tags        = merge({ "Name" : "sgr-jenkins-master-efs" }, var.default_tags)
+  tags        = merge({ "Name" : "sgr-jenkins-controller-efs" }, var.default_tags)
 }
 
 resource "aws_security_group_rule" "allow_jenkins_to_efs" {
@@ -114,5 +114,5 @@ resource "aws_security_group_rule" "allow_jenkins_to_efs" {
   protocol                 = "tcp"
   type                     = "ingress"
   description              = "Jenkins Master access to EFS."
-  source_security_group_id = aws_security_group.jenkins_master_sg.id
+  source_security_group_id = aws_security_group.jenkins_controller_sg.id
 }

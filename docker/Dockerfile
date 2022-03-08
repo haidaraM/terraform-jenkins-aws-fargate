@@ -1,9 +1,10 @@
-FROM jenkins/jenkins:lts-alpine
+FROM jenkins/jenkins:2.338
 
 USER root
 
 # Need awscli to get jenkins configuration from S3
-RUN apk add --no-cache python3 && pip3 install awscli
+RUN apt update && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && ./aws/install && rm -rf awscliv2.zip ./aws && aws --version
 
 USER jenkins
 

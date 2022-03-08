@@ -50,8 +50,8 @@ variable "default_tags" {
 }
 
 #################### Jenkins variables
-variable "master_cpu_memory" {
-  description = "CPU and memory for Jenkins master. Note that all combinations are not supported with Fargate."
+variable "controller_cpu_memory" {
+  description = "CPU and memory for Jenkins controller. Note that all combinations are not supported with Fargate."
   type = object({
     memory = number
     cpu    = number
@@ -74,7 +74,7 @@ variable "example_agent_cpu_memory" {
   }
 }
 
-variable "master_deployment_percentages" {
+variable "controller_deployment_percentages" {
   description = "The Min and Max percentages of Master instance to keep when updating the service. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html"
   type = object({
     min = number
@@ -86,7 +86,7 @@ variable "master_deployment_percentages" {
   }
 }
 
-variable "master_log_retention_days" {
+variable "controller_log_retention_days" {
   description = "Retention days for Master log group"
   type        = number
   default     = 14
@@ -98,43 +98,43 @@ variable "agents_log_retention_days" {
   default     = 5
 }
 
-variable "master_docker_image" {
+variable "controller_docker_image" {
   type        = string
   description = "Jenkins Master docker image to use"
-  default     = "elmhaidara/jenkins-aws-fargate:latest"
+  default     = "elmhaidara/jenkins-aws-fargate:2.338"
 }
 
 variable "example_agent_docker_image" {
   type        = string
   description = "Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/"
-  default     = "elmhaidara/jenkins-alpine-agent-aws:latest"
+  default     = "elmhaidara/jenkins-alpine-agent-aws:latest-alpine"
 }
 
-variable "master_listening_port" {
+variable "controller_listening_port" {
   type        = number
   default     = 8080
   description = "Jenkins container listening port"
 }
 
-variable "master_jnlp_port" {
+variable "controller_jnlp_port" {
   type        = number
   default     = 50000
-  description = "JNLP port used by Jenkins agent to communicate with the master"
+  description = "JNLP port used by Jenkins agent to communicate with the controller"
 }
 
-variable "master_java_opts" {
+variable "controller_java_opts" {
   type        = string
-  description = "JAVA_OPTS to pass to the JVM"
+  description = "JENKINS_OPTS to pass to the controller"
   default     = ""
 }
 
-variable "master_num_executors" {
+variable "controller_num_executors" {
   type        = number
-  description = "Set this to a number > 0 to be able to build on master (NOT RECOMMENDED)"
+  description = "Set this to a number > 0 to be able to build on controller (NOT RECOMMENDED)"
   default     = 0
 }
 
-variable "master_docker_user_uid_gid" {
+variable "controller_docker_user_uid_gid" {
   type        = number
   description = "Jenkins User/Group ID inside the container. One should consider using access point."
   default     = 0 # root
