@@ -163,3 +163,9 @@ variable "efs_burst_credit_balance_threshold" {
   description = "Threshold below which the metric BurstCreditBalance associated alarm will be triggered. Expressed in bytes"
   default     = 1154487209164 // half of the default credits
 }
+
+variable "allowed_ip_addresses" {
+  description = "List of allowed IP addresses to access the master"
+  type        = set(string)
+  default     = ["0.0.0.0/0"]
+}

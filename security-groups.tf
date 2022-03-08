@@ -18,7 +18,7 @@ resource "aws_security_group_rule" "alb_ingress_http" {
   to_port           = 80
   protocol          = "tcp"
   type              = "ingress"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.allowed_ip_addresses
 }
 
 resource "aws_security_group_rule" "alb_ingress_https" {
@@ -28,7 +28,7 @@ resource "aws_security_group_rule" "alb_ingress_https" {
   to_port           = 443
   protocol          = "tcp"
   type              = "ingress"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.allowed_ip_addresses
 }
 
 resource "aws_security_group_rule" "alb_egress_all" {
