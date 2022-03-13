@@ -8,9 +8,8 @@ resource "aws_lb" "nlb_agents" {
   enable_cross_zone_load_balancing = true
 }
 
-/*
- Target group on jenkins listening port for agent to communicate with the controller
-*/
+
+# Target group on the controller listening port for agents to communicate with it
 resource "aws_lb_target_group" "nlb_agents_to_controller_http" {
   name        = "nlb-http-jenkins-agents"
   target_type = "ip"
@@ -50,6 +49,7 @@ resource "aws_lb_listener" "agents_http_listener" {
   }
 }
 
+# Target group on the controller JNLP port for agents to communicate with it
 resource "aws_lb_target_group" "nlb_agents_to_controller_jnlp" {
   name        = "nlb-jnlp-jenkins-agents"
   target_type = "ip"

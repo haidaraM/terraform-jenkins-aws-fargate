@@ -51,26 +51,26 @@ resource "aws_security_group_rule" "jenkins_controller_ingress_alb" {
 }
 
 resource "aws_security_group_rule" "allow_agents_to_jks_jnlp_port" {
-  count             = length(var.private_subnets)
+  for_each          = var.private_subnets
   security_group_id = aws_security_group.jenkins_controller_ecs_service.id
   from_port         = var.controller_jnlp_port
   to_port           = var.controller_jnlp_port
   protocol          = "tcp"
   type              = "ingress"
-  cidr_blocks       = ["${data.aws_network_interface.nlb_network_interface[count.index].private_ip}/32"]
-  description       = "From the NLB to the Jenkins Controller via JNLP and ENI ${data.aws_network_interface.nlb_network_interface[count.index].id}."
+  cidr_blocks       = ["${data.aws_network_interface.each_network_interface[each.key].private_ip}/32"]
+  description       = "From the NLB to the Jenkins Controller via JNLP and ENI ${data.aws_network_interface.each_network_interface[each.key].id}."
 }
 
 # When using a private nlb we need to have this rule for nlb health check to work.
 resource "aws_security_group_rule" "from_private_nlb_network_interfaces" {
-  count             = length(var.private_subnets)
+  for_each          = var.private_subnets
   security_group_id = aws_security_group.jenkins_controller_ecs_service.id
   from_port         = var.controller_listening_port
   to_port           = var.controller_listening_port
   protocol          = "tcp"
   type              = "ingress"
-  cidr_blocks       = ["${data.aws_network_interface.nlb_network_interface[count.index].private_ip}/32"]
-  description       = "From the NLB to the Jenkins Controller via HTTP and ENI ${data.aws_network_interface.nlb_network_interface[count.index].id}. Required for health check."
+  cidr_blocks       = ["${data.aws_network_interface.each_network_interface[each.key].private_ip}/32"]
+  description       = "From the NLB to the Jenkins Controller via HTTP and ENI ${data.aws_network_interface.each_network_interface[each.key].id}. Required for health check."
 }
 
 resource "aws_security_group_rule" "controller_egress_all" {

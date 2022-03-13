@@ -126,14 +126,14 @@ resource "aws_ecs_service" "jenkins_controller" {
     container_port   = var.controller_listening_port
   }
 
-  # nlb http for agent
+  # nlb http for agents
   load_balancer {
     target_group_arn = aws_lb_target_group.nlb_agents_to_controller_http.arn
     container_name   = local.jenkins_controller_container_name
     container_port   = var.controller_listening_port
   }
 
-  # nlb jnlp for agent
+  # nlb jnlp for agents
   load_balancer {
     target_group_arn = aws_lb_target_group.nlb_agents_to_controller_jnlp.arn
     container_name   = local.jenkins_controller_container_name
@@ -164,24 +164,24 @@ resource "aws_acm_certificate" "controller_certificate" {
 
 resource "aws_route53_record" "certificate_validation_record" {
   count   = var.route53_zone_name != "" ? 1 : 0
-  name    = tolist(aws_acm_certificate.controller_certificate.0.domain_validation_options)[0].resource_record_name
-  type    = tolist(aws_acm_certificate.controller_certificate.0.domain_validation_options)[0].resource_record_type
-  zone_id = data.aws_route53_zone.dns_zone.0.zone_id
-  records = [tolist(aws_acm_certificate.controller_certificate.0.domain_validation_options)[0].resource_record_value]
+  name    = tolist(aws_acm_certificate.controller_certificate[0].domain_validation_options)[0].resource_record_name
+  type    = tolist(aws_acm_certificate.controller_certificate[0].domain_validation_options)[0].resource_record_type
+  zone_id = data.aws_route53_zone.dns_zone[0].zone_id
+  records = [tolist(aws_acm_certificate.controller_certificate[0].domain_validation_options)[0].resource_record_value]
   ttl     = "60"
 }
 
 resource "aws_acm_certificate_validation" "validation" {
   count                   = var.route53_zone_name != "" ? 1 : 0
-  certificate_arn         = aws_acm_certificate.controller_certificate.0.arn
-  validation_record_fqdns = [aws_route53_record.certificate_validation_record.0.fqdn]
+  certificate_arn         = aws_acm_certificate.controller_certificate[0].arn
+  validation_record_fqdns = [aws_route53_record.certificate_validation_record[0].fqdn]
 }
 
 resource "aws_route53_record" "alb_dns_record" {
   count   = var.route53_zone_name != "" ? 1 : 0
   name    = local.jenkins_host
   type    = "A"
-  zone_id = data.aws_route53_zone.dns_zone.0.zone_id
+  zone_id = data.aws_route53_zone.dns_zone[0].zone_id
 
   alias {
     evaluate_target_health = true

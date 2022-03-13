@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
   }
 }
 
-# see jenkins ecs plugin documentation: https://plugins.jenkins.io/scalable-amazon-ecs/
+# See jenkins ecs plugin documentation: https://plugins.jenkins.io/scalable-amazon-ecs/
 data "aws_iam_policy_document" "controller_ecs_task" {
   statement {
     sid    = "AllowToPassRoleToAgents"
@@ -87,15 +87,20 @@ data "aws_iam_policy_document" "controller_ecs_task" {
 # Getting the network interface attached to the nlb. Their IP address will be used in the security group attached to the
 # task according to the best practice
 # https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html#target-security-groups
-data "aws_network_interfaces" "nlb_network_interfaces" {
+data "aws_network_interface" "each_network_interface" {
+  for_each = var.private_subnets
+
   filter {
     name = "description"
-    # filter with nlb id in the description
+    /*
+    Filter with nlb id in the description.
+    Example of description: ELB net/nlb-jenkins-agents/c13704bf0d2c7995
+    */
     values = ["*${split("/", aws_lb.nlb_agents.arn)[3]}*"]
   }
-}
 
-data "aws_network_interface" "nlb_network_interface" {
-  count = length(var.private_subnets)
-  id    = tolist(data.aws_network_interfaces.nlb_network_interfaces.ids)[count.index]
+  filter {
+    name   = "subnet-id"
+    values = [each.key]
+  }
 }
