@@ -3,10 +3,6 @@
  https://github.com/terraform-linters/tflint/tree/master/docs/rules
 */
 
-
-/**
- AWS is enabled by default since it's most widely used provider.
-*/
 plugin "aws" {
   enabled = true
   version = "0.12.0"

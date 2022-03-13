@@ -62,7 +62,7 @@ variable "controller_cpu_memory" {
   }
 }
 
-variable "example_agent_cpu_memory" {
+variable "agents_cpu_memory" {
   description = "CPU and memory for the agent example. Note that all combinations are not supported with Fargate."
   type = object({
     memory = number
@@ -104,7 +104,7 @@ variable "controller_docker_image" {
   default     = "elmhaidara/jenkins-aws-fargate:2.338"
 }
 
-variable "example_agent_docker_image" {
+variable "agent_docker_image" {
   type        = string
   description = "Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/"
   default     = "elmhaidara/jenkins-alpine-agent-aws:latest-alpine"
