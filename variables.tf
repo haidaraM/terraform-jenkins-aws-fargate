@@ -161,7 +161,7 @@ variable "efs_provisioned_throughput_in_mibps" {
 variable "efs_burst_credit_balance_threshold" {
   type        = number
   description = "Threshold below which the metric BurstCreditBalance associated alarm will be triggered. Expressed in bytes"
-  default     = 1154487209164 // half of the default credits
+  default     = 1154487209164 # half of the default credits
 }
 
 variable "allowed_ip_addresses" {
