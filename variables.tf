@@ -22,13 +22,13 @@ variable "aws_region" {
 }
 
 variable "route53_zone_name" {
-  description = "A Route53 zone name to use to create a DNS record for the Jenkins Master. Required for HTTPs."
+  description = "A Route53 zone name to use to create a DNS record for the Jenkins Controller. Required for HTTPs."
   type        = string
   default     = ""
 }
 
 variable "route53_subdomain" {
-  description = "The subdomain to use for Jenkins Master. Used when var.route53_zone_name is not empty"
+  description = "The subdomain to use for Jenkins Controller. Used when var.route53_zone_name is not empty"
   type        = string
   default     = "jenkins"
 }
@@ -75,7 +75,7 @@ variable "example_agent_cpu_memory" {
 }
 
 variable "controller_deployment_percentages" {
-  description = "The Min and Max percentages of Master instance to keep when updating the service. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html"
+  description = "The Min and Max percentages of Controller instance to keep when updating the service. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html"
   type = object({
     min = number
     max = number
@@ -87,7 +87,7 @@ variable "controller_deployment_percentages" {
 }
 
 variable "controller_log_retention_days" {
-  description = "Retention days for Master log group"
+  description = "Retention days for Controller log group"
   type        = number
   default     = 14
 }
@@ -100,7 +100,7 @@ variable "agents_log_retention_days" {
 
 variable "controller_docker_image" {
   type        = string
-  description = "Jenkins Master docker image to use"
+  description = "Jenkins Controller docker image to use"
   default     = "elmhaidara/jenkins-aws-fargate:2.338"
 }
 
@@ -165,7 +165,7 @@ variable "efs_burst_credit_balance_threshold" {
 }
 
 variable "allowed_ip_addresses" {
-  description = "List of allowed IP addresses to access the master"
+  description = "List of allowed IP addresses to access the controller from the ALB"
   type        = set(string)
   default     = ["0.0.0.0/0"]
 }

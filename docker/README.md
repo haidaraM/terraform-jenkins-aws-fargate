@@ -1,9 +1,9 @@
 # Docker images
 
-The folder contains the docker images used in Terraform: the Jenkins Master one and the agent one. Both images are based
-on the official images with some customization.
+The folder contains the docker images used in Terraform: the Jenkins Controller and the agent. Both images are based on
+the official images with some customization.
 
-## Jenkins Master
+## Jenkins Controller: Dockerfile
 
 In this image, we install some required plugins. See the [plugins](./plugins.txt) file.
 

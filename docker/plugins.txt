@@ -1,5 +1,6 @@
-amazon-ecs:1.40
+amazon-ecs:1.41
 aws-credentials:1.33
+command-launcher:1.6
 cloudbees-folder:6.18
 pipeline-utility-steps:2.12.0
 pipeline-aws:1.43

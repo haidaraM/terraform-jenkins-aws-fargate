@@ -24,7 +24,7 @@ resource "aws_cloudwatch_metric_alarm" "efs_burst_credit_balance" {
 
 resource "aws_cloudwatch_metric_alarm" "alb_too_many_5xx_errors" {
   alarm_name          = "jenkins-alb-too-many-5xx-errors"
-  alarm_description   = "The number of 5xx errors recorded by the Master ALB is high. Check the log group ${aws_cloudwatch_log_group.jenkins_controller.name}."
+  alarm_description   = "The number of 5xx errors recorded by the Controller ALB is high. Check the log group ${aws_cloudwatch_log_group.jenkins_controller.name}."
   comparison_operator = "GreaterThanOrEqualToThreshold"
   namespace           = "AWS/ApplicationELB"
   metric_name         = "HTTPCode_ELB_5XX_Count"
@@ -63,7 +63,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_healthy_host_count" {
 
 resource "aws_cloudwatch_metric_alarm" "jenkins_high_cpu" {
   alarm_name          = "jenkins-controller-high-cpu-utilization"
-  alarm_description   = "High CPU utilization of the Jenkins Master"
+  alarm_description   = "High CPU utilization of the Jenkins Controller"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   namespace           = "AWS/ECS"
   metric_name         = "CPUUtilization"
@@ -84,7 +84,7 @@ resource "aws_cloudwatch_metric_alarm" "jenkins_high_cpu" {
 
 resource "aws_cloudwatch_metric_alarm" "jenkins_high_memory" {
   alarm_name          = "jenkins-controller-high-memory-utilization"
-  alarm_description   = "High Memory utilization of the Jenkins Master"
+  alarm_description   = "High Memory utilization of the Jenkins Controller"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   namespace           = "AWS/ECS"
   metric_name         = "MemoryUtilization"

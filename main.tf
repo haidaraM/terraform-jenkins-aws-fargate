@@ -26,7 +26,7 @@ locals {
 }
 
 
-# The cluster for Jenkins Master and agents
+# The cluster for Jenkins: controller and agents
 resource "aws_ecs_cluster" "cluster" {
   name               = "jenkins-cluster"
   capacity_providers = ["FARGATE"]
@@ -105,7 +105,7 @@ resource "aws_ecs_service" "jenkins_controller" {
   deployment_maximum_percent         = var.controller_deployment_percentages.max
 
   network_configuration {
-    security_groups  = [aws_security_group.jenkins_controller_sg.id]
+    security_groups  = [aws_security_group.jenkins_controller_ecs_service.id]
     subnets          = var.private_subnets
     assign_public_ip = false
   }
