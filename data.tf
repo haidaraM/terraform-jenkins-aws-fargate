@@ -83,3 +83,19 @@ data "aws_iam_policy_document" "controller_ecs_task" {
     resources = ["arn:aws:ecs:${var.aws_region}:${data.aws_caller_identity.caller.account_id}:task/*"]
   }
 }
+
+# Getting the network interface attached to the nlb. Their IP address will be used in the security group attached to the
+# task according to the best practice
+# https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html#target-security-groups
+data "aws_network_interfaces" "nlb_network_interfaces" {
+  filter {
+    name = "description"
+    # filter with nlb id in the description
+    values = ["*${split("/", aws_lb.nlb_agents.arn)[3]}*"]
+  }
+}
+
+data "aws_network_interface" "nlb_network_interface" {
+  count = length(var.private_subnets)
+  id    = tolist(data.aws_network_interfaces.nlb_network_interfaces.ids)[count.index]
+}
