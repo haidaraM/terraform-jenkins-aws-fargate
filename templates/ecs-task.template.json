@@ -18,7 +18,7 @@
       }
     ],
     "essential": true,
-    "name": "${jenkins_master_container_name}",
+    "name": "${jenkins_controller_container_name}",
     "environment": ${env_vars},
     "image": "${image}",
     "logConfiguration": {

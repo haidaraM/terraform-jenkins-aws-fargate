@@ -22,13 +22,13 @@ variable "aws_region" {
 }
 
 variable "route53_zone_name" {
-  description = "A Route53 zone name to use to create a DNS record for the Jenkins Master. Required for HTTPs."
+  description = "A Route53 zone name to use to create a DNS record for the Jenkins Controller. Required for HTTPs."
   type        = string
   default     = ""
 }
 
 variable "route53_subdomain" {
-  description = "The subdomain to use for Jenkins Master. Used when var.route53_zone_name is not empty"
+  description = "The subdomain to use for Jenkins Controller. Used when var.route53_zone_name is not empty"
   type        = string
   default     = "jenkins"
 }
@@ -50,8 +50,8 @@ variable "default_tags" {
 }
 
 #################### Jenkins variables
-variable "master_cpu_memory" {
-  description = "CPU and memory for Jenkins master. Note that all combinations are not supported with Fargate."
+variable "controller_cpu_memory" {
+  description = "CPU and memory for Jenkins controller. Note that all combinations are not supported with Fargate."
   type = object({
     memory = number
     cpu    = number
@@ -62,7 +62,7 @@ variable "master_cpu_memory" {
   }
 }
 
-variable "example_agent_cpu_memory" {
+variable "agents_cpu_memory" {
   description = "CPU and memory for the agent example. Note that all combinations are not supported with Fargate."
   type = object({
     memory = number
@@ -74,8 +74,8 @@ variable "example_agent_cpu_memory" {
   }
 }
 
-variable "master_deployment_percentages" {
-  description = "The Min and Max percentages of Master instance to keep when updating the service. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html"
+variable "controller_deployment_percentages" {
+  description = "The Min and Max percentages of Controller instance to keep when updating the service. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html"
   type = object({
     min = number
     max = number
@@ -86,8 +86,8 @@ variable "master_deployment_percentages" {
   }
 }
 
-variable "master_log_retention_days" {
-  description = "Retention days for Master log group"
+variable "controller_log_retention_days" {
+  description = "Retention days for Controller log group"
   type        = number
   default     = 14
 }
@@ -98,43 +98,43 @@ variable "agents_log_retention_days" {
   default     = 5
 }
 
-variable "master_docker_image" {
+variable "controller_docker_image" {
   type        = string
-  description = "Jenkins Master docker image to use"
-  default     = "elmhaidara/jenkins-aws-fargate:latest"
+  description = "Jenkins Controller docker image to use"
+  default     = "elmhaidara/jenkins-aws-fargate:2.338"
 }
 
-variable "example_agent_docker_image" {
+variable "agent_docker_image" {
   type        = string
   description = "Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/"
-  default     = "elmhaidara/jenkins-alpine-agent-aws:latest"
+  default     = "elmhaidara/jenkins-alpine-agent-aws:latest-alpine"
 }
 
-variable "master_listening_port" {
+variable "controller_listening_port" {
   type        = number
   default     = 8080
   description = "Jenkins container listening port"
 }
 
-variable "master_jnlp_port" {
+variable "controller_jnlp_port" {
   type        = number
   default     = 50000
-  description = "JNLP port used by Jenkins agent to communicate with the master"
+  description = "JNLP port used by Jenkins agent to communicate with the controller"
 }
 
-variable "master_java_opts" {
+variable "controller_java_opts" {
   type        = string
-  description = "JAVA_OPTS to pass to the JVM"
+  description = "JENKINS_OPTS to pass to the controller"
   default     = ""
 }
 
-variable "master_num_executors" {
+variable "controller_num_executors" {
   type        = number
-  description = "Set this to a number > 0 to be able to build on master (NOT RECOMMENDED)"
+  description = "Set this to a number > 0 to be able to build on controller (NOT RECOMMENDED)"
   default     = 0
 }
 
-variable "master_docker_user_uid_gid" {
+variable "controller_docker_user_uid_gid" {
   type        = number
   description = "Jenkins User/Group ID inside the container. One should consider using access point."
   default     = 0 # root
@@ -161,5 +161,11 @@ variable "efs_provisioned_throughput_in_mibps" {
 variable "efs_burst_credit_balance_threshold" {
   type        = number
   description = "Threshold below which the metric BurstCreditBalance associated alarm will be triggered. Expressed in bytes"
-  default     = 1154487209164 // half of the default credits
+  default     = 1154487209164 # half of the default credits
+}
+
+variable "allowed_ip_addresses" {
+  description = "List of allowed IP addresses to access the controller from the ALB"
+  type        = set(string)
+  default     = ["0.0.0.0/0"]
 }

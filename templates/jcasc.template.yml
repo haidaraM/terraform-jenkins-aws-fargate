@@ -47,14 +47,12 @@ jenkins:
   markupFormatter: "plainText"
   mode: NORMAL
   myViewsTabBar: "standard"
-  numExecutors: ${jenkins_master_num_executors}
+  numExecutors: ${jenkins_controller_num_executors}
   primaryView:
     all:
       name: "all"
   projectNamingStrategy: "standard"
   quietPeriod: 5
-  remotingSecurity:
-    enabled: true
   scmCheckoutRetryCount: 0
   securityRealm:
     local:

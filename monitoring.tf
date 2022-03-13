@@ -1,7 +1,6 @@
 resource "aws_sns_topic" "alarms_topic" {
   name         = "jenkins-alarms"
   display_name = "Topic for Jenkins alarms"
-  tags         = var.default_tags
 }
 
 resource "aws_cloudwatch_metric_alarm" "efs_burst_credit_balance" {
@@ -11,13 +10,12 @@ resource "aws_cloudwatch_metric_alarm" "efs_burst_credit_balance" {
   namespace           = "AWS/EFS"
   metric_name         = "BurstCreditBalance"
   statistic           = "Minimum"
-  evaluation_periods  = 1  // 1 minute
-  period              = 60 // 1 minute
+  evaluation_periods  = 1  # 1 minute
+  period              = 60 # 1 minute
   threshold           = var.efs_burst_credit_balance_threshold
   treat_missing_data  = "notBreaching"
   alarm_actions       = [aws_sns_topic.alarms_topic.arn]
   ok_actions          = [aws_sns_topic.alarms_topic.arn]
-  tags                = var.default_tags
 
   dimensions = {
     FileSystemId = aws_efs_file_system.jenkins_conf.id
@@ -26,21 +24,20 @@ resource "aws_cloudwatch_metric_alarm" "efs_burst_credit_balance" {
 
 resource "aws_cloudwatch_metric_alarm" "alb_too_many_5xx_errors" {
   alarm_name          = "jenkins-alb-too-many-5xx-errors"
-  alarm_description   = "The number of 5xx errors recorded by the Master ALB is high. Check the log group ${aws_cloudwatch_log_group.jenkins_master.name}."
+  alarm_description   = "The number of 5xx errors recorded by the Controller ALB is high. Check the log group ${aws_cloudwatch_log_group.jenkins_controller.name}."
   comparison_operator = "GreaterThanOrEqualToThreshold"
   namespace           = "AWS/ApplicationELB"
   metric_name         = "HTTPCode_ELB_5XX_Count"
   statistic           = "Sum"
-  evaluation_periods  = 5  // 5 minutes
-  period              = 60 // 1 minute
+  evaluation_periods  = 5  # 5 minutes
+  period              = 60 # 1 minute
   threshold           = 60
   treat_missing_data  = "notBreaching"
   alarm_actions       = [aws_sns_topic.alarms_topic.arn]
   ok_actions          = [aws_sns_topic.alarms_topic.arn]
-  tags                = var.default_tags
 
   dimensions = {
-    LoadBalancer = aws_alb.alb_jenkins_master.arn_suffix
+    LoadBalancer = aws_alb.alb_jenkins_controller.arn_suffix
   }
 }
 
@@ -51,60 +48,66 @@ resource "aws_cloudwatch_metric_alarm" "alb_healthy_host_count" {
   namespace           = "AWS/ApplicationELB"
   metric_name         = "HealthyHostCount"
   statistic           = "Average"
-  evaluation_periods  = 5  // 5 minutes
-  period              = 60 // 1 minute
+  evaluation_periods  = 5  # 5 minutes
+  period              = 60 # 1 minute
   threshold           = 1
   treat_missing_data  = "notBreaching"
   alarm_actions       = [aws_sns_topic.alarms_topic.arn]
   ok_actions          = [aws_sns_topic.alarms_topic.arn]
-  tags                = var.default_tags
 
   dimensions = {
-    TargetGroup  = aws_alb_target_group.jenkins_master_tg.arn_suffix
-    LoadBalancer = aws_alb.alb_jenkins_master.arn_suffix
+    TargetGroup  = aws_alb_target_group.jenkins_controller_tg.arn_suffix
+    LoadBalancer = aws_alb.alb_jenkins_controller.arn_suffix
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "jenkins_high_cpu" {
-  alarm_name          = "jenkins-master-high-cpu-utilization"
-  alarm_description   = "High CPU utilization of the Jenkins Master"
+  alarm_name          = "jenkins-controller-high-cpu-utilization"
+  alarm_description   = "High CPU utilization of the Jenkins Controller"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   namespace           = "AWS/ECS"
   metric_name         = "CPUUtilization"
   statistic           = "Average"
-  evaluation_periods  = 5  // 5 minutes
-  period              = 60 // 1 minute
-  threshold           = 80 // %
+  evaluation_periods  = 5  # 5 minutes
+  period              = 60 # 1 minute
+  threshold           = 80 # %
   treat_missing_data  = "notBreaching"
   alarm_actions       = [aws_sns_topic.alarms_topic.arn]
   ok_actions          = [aws_sns_topic.alarms_topic.arn]
-  tags                = var.default_tags
 
   dimensions = {
     ClusterName = aws_ecs_cluster.cluster.name
-    ServiceName = aws_ecs_service.jenkins_master.name
+    ServiceName = aws_ecs_service.jenkins_controller.name
   }
 }
 
 
 resource "aws_cloudwatch_metric_alarm" "jenkins_high_memory" {
-  alarm_name          = "jenkins-master-high-memory-utilization"
-  alarm_description   = "High Memory utilization of the Jenkins Master"
+  alarm_name          = "jenkins-controller-high-memory-utilization"
+  alarm_description   = "High Memory utilization of the Jenkins Controller"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   namespace           = "AWS/ECS"
   metric_name         = "MemoryUtilization"
   statistic           = "Average"
-  evaluation_periods  = 5  // 5 minutes
-  period              = 60 // 1 minute
-  threshold           = 75 // %
+  evaluation_periods  = 5  # 5 minutes
+  period              = 60 # 1 minute
+  threshold           = 75 # %
   treat_missing_data  = "notBreaching"
   alarm_actions       = [aws_sns_topic.alarms_topic.arn]
   ok_actions          = [aws_sns_topic.alarms_topic.arn]
-  tags                = var.default_tags
 
   dimensions = {
     ClusterName = aws_ecs_cluster.cluster.name
-    ServiceName = aws_ecs_service.jenkins_master.name
+    ServiceName = aws_ecs_service.jenkins_controller.name
   }
 }
 
+resource "aws_cloudwatch_log_group" "jenkins_controller" {
+  name              = "/jenkins/controller"
+  retention_in_days = var.controller_log_retention_days
+}
+
+resource "aws_cloudwatch_log_group" "agents" {
+  name              = "/jenkins/agents"
+  retention_in_days = var.agents_log_retention_days
+}

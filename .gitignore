@@ -37,3 +37,4 @@ terraform.rc
 jcas.yml
 jcas-from-jenkins.yaml
 .idea
+.terraform.lock.hcl
