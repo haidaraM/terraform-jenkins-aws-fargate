@@ -33,13 +33,17 @@ locals {
 
 # The cluster for Jenkins: controller and agents
 resource "aws_ecs_cluster" "cluster" {
-  name               = "jenkins-cluster"
-  capacity_providers = ["FARGATE"]
+  name = "jenkins-cluster"
 
   setting {
     name  = "containerInsights"
     value = "enabled"
   }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "capacity_providers" {
+  cluster_name       = aws_ecs_cluster.cluster.name
+  capacity_providers = ["FARGATE"]
 }
 
 resource "aws_efs_file_system" "jenkins_conf" {
