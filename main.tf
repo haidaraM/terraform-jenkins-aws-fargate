@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3"
+    }
   }
 }
 
@@ -19,10 +23,11 @@ provider "aws" {
 
 locals {
   jenkins_controller_container_name = "jenkins-controller"
-  jenkins_home                      = "/var/jenkins_home" # Jenkins home inside the container. This is hard coded in the official docker image
-  efs_volume_name                   = "jenkins-efs-configuration"
-  jenkins_host                      = "${var.route53_subdomain}.${var.route53_zone_name}"
-  jenkins_public_url                = var.route53_zone_name != "" ? "https://${local.jenkins_host}" : "http://${aws_alb.alb_jenkins_controller.dns_name}"
+  jenkins_home                      = "/var/jenkins_home"
+  # Jenkins home inside the container. This is hard coded in the official docker image
+  efs_volume_name    = "jenkins-efs-configuration"
+  jenkins_host       = "${var.route53_subdomain}.${var.route53_zone_name}"
+  jenkins_public_url = var.route53_zone_name != "" ? "https://${local.jenkins_host}" : "http://${aws_alb.alb_jenkins_controller.dns_name}"
 }
 
 
@@ -41,7 +46,7 @@ resource "aws_efs_file_system" "jenkins_conf" {
   performance_mode                = var.efs_performance_mode
   throughput_mode                 = var.efs_throughput_mode
   provisioned_throughput_in_mibps = var.efs_provisioned_throughput_in_mibps
-  tags                            = merge({ "Name" : "jenkins-controller-configuration" }, var.default_tags)
+  tags                            = { "Name" : "jenkins-controller-configuration" }
 
   lifecycle_policy {
     transition_to_ia = "AFTER_30_DAYS"
@@ -81,7 +86,10 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
     jenkins_jnlp_port = var.controller_jnlp_port
     env_vars = jsonencode([
       { name : "JENKINS_JAVA_OPTS", value : var.controller_java_opts },
-      { name : "JENKINS_CONF_S3_URL", value : "s3://${aws_s3_object.jenkins_conf.bucket}/${aws_s3_object.jenkins_conf.key}" },
+      {
+        name : "JENKINS_CONF_S3_URL",
+        value : "s3://${aws_s3_object.jenkins_conf.bucket}/${aws_s3_object.jenkins_conf.key}"
+      },
       # This will force the creation of a new version of the task definition if the configuration changes and cause ECS to launch
       # a new container.
       { name : "JENKINS_CONF_S3_VERSION_ID", value : aws_s3_object.jenkins_conf.version_id }
@@ -94,10 +102,11 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
 }
 
 resource "aws_ecs_service" "jenkins_controller" {
-  name             = "jenkins-controller"
-  cluster          = aws_ecs_cluster.cluster.id
-  task_definition  = aws_ecs_task_definition.jenkins_controller.arn
-  desired_count    = 1 # only one controller should be up and running. Open Source version of Jenkins is not adapted for multi controllers mode
+  name            = "jenkins-controller"
+  cluster         = aws_ecs_cluster.cluster.id
+  task_definition = aws_ecs_task_definition.jenkins_controller.arn
+  desired_count   = 1
+  # only one controller should be up and running. Open Source version of Jenkins is not adapted for multi controllers mode
   launch_type      = "FARGATE"
   platform_version = var.fargate_platform_version
 
