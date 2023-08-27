@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.338
+FROM jenkins/jenkins:2.387.3
 
 USER root
 
@@ -9,7 +9,7 @@ RUN apt update && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 USER jenkins
 
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --verbose --plugin-file /usr/share/jenkins/ref/plugins.txt
 
 COPY ./controller-entrypoint.sh /usr/bin/entrypoint
 
