@@ -49,7 +49,8 @@ data "aws_iam_policy_document" "controller_ecs_task" {
       "ecs:ListClusters",
       "ecs:DescribeContainerInstances",
       "ecs:ListTaskDefinitions",
-      "ecs:DescribeTaskDefinition"
+      "ecs:DescribeTaskDefinition",
+      "ecs:ListTagsForResource"
     ]
     resources = ["*"]
   }
