@@ -9,11 +9,12 @@ resource "aws_alb" "alb_jenkins_controller" {
 }
 
 resource "aws_alb_target_group" "jenkins_controller_tg" {
-  name        = "alb-http-jenkins-controller"
-  port        = var.controller_listening_port
-  target_type = "ip"
-  protocol    = "HTTP"
-  vpc_id      = var.vpc_id
+  name                 = "alb-http-jenkins-controller"
+  port                 = var.controller_listening_port
+  target_type          = "ip"
+  protocol             = "HTTP"
+  vpc_id               = var.vpc_id
+  deregistration_delay = var.target_groups_deregistration_delay
 
   stickiness {
     type    = "lb_cookie"

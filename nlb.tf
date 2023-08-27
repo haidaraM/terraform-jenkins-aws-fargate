@@ -11,11 +11,12 @@ resource "aws_lb" "nlb_agents" {
 
 # Target group on the controller listening port for agents to communicate with it
 resource "aws_lb_target_group" "nlb_agents_to_controller_http" {
-  name        = "nlb-http-jenkins-agents"
-  target_type = "ip"
-  port        = var.controller_listening_port
-  protocol    = "TCP"
-  vpc_id      = var.vpc_id
+  name                 = "nlb-http-jenkins-agents"
+  target_type          = "ip"
+  port                 = var.controller_listening_port
+  protocol             = "TCP"
+  vpc_id               = var.vpc_id
+  deregistration_delay = var.target_groups_deregistration_delay
 
 
   health_check {
@@ -51,11 +52,12 @@ resource "aws_lb_listener" "agents_http_listener" {
 
 # Target group on the controller JNLP port for agents to communicate with it
 resource "aws_lb_target_group" "nlb_agents_to_controller_jnlp" {
-  name        = "nlb-jnlp-jenkins-agents"
-  target_type = "ip"
-  port        = var.controller_jnlp_port
-  protocol    = "TCP"
-  vpc_id      = var.vpc_id
+  name                 = "nlb-jnlp-jenkins-agents"
+  target_type          = "ip"
+  port                 = var.controller_jnlp_port
+  protocol             = "TCP"
+  vpc_id               = var.vpc_id
+  deregistration_delay = var.target_groups_deregistration_delay
 
   # Fixme: looks like we can't put the health check on the jnlp port
   health_check {

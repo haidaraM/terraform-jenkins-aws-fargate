@@ -57,8 +57,8 @@ variable "controller_cpu_memory" {
     cpu    = number
   })
   default = {
-    memory = 2048
-    cpu    = 1024
+    memory = 4096
+    cpu    = 2048
   }
 }
 
@@ -69,13 +69,22 @@ variable "agents_cpu_memory" {
     cpu    = number
   })
   default = {
-    memory = 2048
-    cpu    = 1024
+    memory = 4096
+    cpu    = 2048
   }
 }
 
+variable "target_groups_deregistration_delay" {
+  description = "Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. It has a direct impact on the time it takes to run the controller."
+  type        = number
+  default     = 60
+}
+
 variable "controller_deployment_percentages" {
-  description = "The Min and Max percentages of Controller instance to keep when updating the service. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html"
+  description = <<EOF
+The Min and Max percentages of Controller instance to keep when updating the service. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html.
+These default values cause the ECS to stop the controller before starting a new one. This is to avoid having 2 controllers running at the same time.
+EOF
   type = object({
     min = number
     max = number
@@ -101,7 +110,7 @@ variable "agents_log_retention_days" {
 variable "controller_docker_image" {
   type        = string
   description = "Jenkins Controller docker image to use"
-  default     = "elmhaidara/jenkins-aws-fargate:2.338"
+  default     = "elmhaidara/jenkins-aws-fargate:2.420"
 }
 
 variable "agent_docker_image" {
