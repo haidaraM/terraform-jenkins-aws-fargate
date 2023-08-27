@@ -1,10 +1,11 @@
-# v2.1.0 (unreleased)
+# v2.1.0
 
 - fix: Do not use S3 ACL anymore. See this
   announcement https://aws.amazon.com/about-aws/whats-new/2022/12/amazon-s3-automatically-enable-block-public-access-disable-access-control-lists-buckets-april-2023/
 - Update Jenkins (2.338 -> 2.420) and the plugins. Use the new jenkins-plugin-cli to update the plugins.
 - Update configuration as code by removing now invalid fields
 - Update pre-commit hooks
+- fix: Speed up controller deployment time by reducing deregistration delay
 
 # v2.0.0
 
