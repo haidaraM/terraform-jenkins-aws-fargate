@@ -1,5 +1,5 @@
 # This is just an example of a Jenkins agent
-FROM jenkins/inbound-agent:latest-alpine
+FROM --platform=linux/amd64 jenkins/inbound-agent:latest-alpine
 
 # use root user to be able to install packages
 USER root

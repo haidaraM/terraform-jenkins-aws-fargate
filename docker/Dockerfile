@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.387.3
+FROM --platform=linux/amd64 jenkins/jenkins:2.420
 
 USER root
 

@@ -75,23 +75,7 @@ jenkins:
     - all:
         name: "all"
   viewsTabBar: "standard"
-security:
-  apiToken:
-    creationOfLegacyTokenEnabled: false
-    tokenGenerationOnCreationEnabled: false
-    usageStatisticsEnabled: true
-  globalJobDslSecurityConfiguration:
-    useScriptSecurity: true
-  sSHD:
-    port: -1
 unclassified:
-  bitbucketEndpointConfiguration:
-    endpoints:
-      - bitbucketCloudEndpoint:
-          enableCache: false
-          manageHooks: false
-          repositoriesCacheDuration: 0
-          teamCacheDuration: 0
   buildDiscarders:
     configuredBuildDiscarders:
       - "jobBuildDiscarder"
@@ -99,11 +83,7 @@ unclassified:
     healthMetrics:
       - worstChildHealthMetric:
           recursive: true
-  gitHubConfiguration:
-    apiRateLimitChecker: ThrottleForNormalize
-  gitHubPluginConfig:
-    hookUrl: "${jenkins_public_url}/github-webhook/"
-  gitSCM:
+  scmGit:
     createAccountBasedOnEmail: false
     showEntireCommitSummaryInChanges: false
     useExistingAccountWithSameEmail: false
