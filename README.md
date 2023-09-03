@@ -83,7 +83,9 @@ Install them and restart the controller.
 
 ### Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_ecs_events"></a> [ecs\_events](#module\_ecs\_events) | ./modules/ecs-events-capture | n/a |
 
 ### Resources
 

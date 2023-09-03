@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4"
+      version = "~> 5"
     }
     random = {
       source  = "hashicorp/random"
@@ -83,7 +83,7 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
   }
 
   container_definitions = templatefile("${path.module}/templates/ecs-task.template.json", {
-    image             = var.controller_docker_image
+    image             = "${aws_ecr_repository.jenkins_controller.repository_url}:2.420.0"
     region            = var.aws_region
     log_group_name    = aws_cloudwatch_log_group.jenkins_controller.id
     jenkins_http_port = var.controller_listening_port
