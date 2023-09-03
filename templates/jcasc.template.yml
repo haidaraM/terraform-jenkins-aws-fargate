@@ -114,9 +114,13 @@ jobs: # this requires the job-dsl plugin
                   label '${example_agent_label}'
                 }
                 stages {
-                  stage ('Print env vars') {
+                  stage ('Caller identity: assumed role') {
                     steps {
                       sh "aws sts get-caller-identity"
+                    }
+                  }
+                  stage ('Print env vars') {
+                    steps {
                       sh "env"
                     }
                   }

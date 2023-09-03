@@ -9,7 +9,7 @@ locals {
     agents_task_role_arn             = aws_iam_role.agents_ecs_task_role.arn
     example_agent_label              = "example-agent"
     example_agent_cpu_memory         = var.agents_cpu_memory
-    example_agent_docker_image       = var.agent_docker_image
+    example_agent_docker_image       = "${aws_ecr_repository.jenkins_agent.repository_url}:latest-alpine"
     jnlp_port                        = var.controller_jnlp_port
     jenkins_controller_num_executors = var.controller_num_executors
     jenkins_public_url               = local.jenkins_public_url
