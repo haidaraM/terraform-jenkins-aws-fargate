@@ -57,7 +57,7 @@ resource "terraform_data" "build_agent_soci_indexes" {
     environment = local.soci_docker_run_env_vars
     working_dir = local.soci_index_builder_dir
     command     = <<CMD
-    docker run --rm --privileged --env AWS_REGION --env IMAGE_ARCH \
+    docker run --rm --privileged \
         ${join(" ", formatlist("--env %s", keys(local.soci_docker_run_env_vars)))} \
         --mount type=tmpfs,destination=/var/lib/containerd \
         --mount type=tmpfs,destination=/var/lib/soci-snapshotter-grpc \
