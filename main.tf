@@ -103,6 +103,17 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
     jenkins_user_uid                  = var.controller_docker_user_uid_gid
     jenkins_home                      = local.jenkins_home
   })
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.build_soci_indexes
+    ]
+  }
+
+  # Making sure the indexes are built before the task definition is created/updated
+  depends_on = [
+    terraform_data.build_soci_indexes
+  ]
 }
 
 resource "aws_ecs_service" "jenkins_controller" {

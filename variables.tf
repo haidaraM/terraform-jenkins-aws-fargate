@@ -201,7 +201,7 @@ This variable is just a convenient way to do it from Terraform. Prefer using the
 EOF
   type = object({
     enabled  = optional(bool, false)     # Whether to enable SOCI or not
-    env_vars = optional(map(string), {}) # Env vars to pass to the Docker runs when building the SOCI
+    env_vars = optional(map(string), {}) # Env vars to pass to the Docker run command when building the indexes
   })
   default = {}
 }

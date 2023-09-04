@@ -39,7 +39,7 @@ resource "terraform_data" "build_soci_index_builder" {
   }
 }
 
-resource "terraform_data" "build_agent_soci_indexes" {
+resource "terraform_data" "build_soci_indexes" {
   for_each = var.soci.enabled ? local.soci_images_to_push_ecr : {}
   triggers_replace = [
     each.key,
