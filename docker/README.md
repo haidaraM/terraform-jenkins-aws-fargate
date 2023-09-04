@@ -32,3 +32,8 @@ docker build  -f Dockerfile.agent -t elmhaidara/jenkins-alpine-agent-aws .
 ```
 
 You can pull it from docker hub: `docker pull elmhaidara/jenkins-alpine-agent-aws:latest`.
+
+## Containerized Index Builder
+
+To build a SOCI index in a container, you can use the [containerized-index-builder](./containerized-index-builder/)
+tool. 

@@ -38,6 +38,7 @@ def main():
     client = boto3.client("logs", region_name=aws_region)
     logging.info('Getting Log Streams for Log Group %s', log_group_name)
     try:
+        # TODO: make this work for more than 50 log streams
         response = client.describe_log_streams(
             logGroupName=log_group_name,
             limit=50
@@ -55,7 +56,8 @@ def main():
         try:
             response = client.get_log_events(
                 logGroupName=log_group_name,
-                logStreamName=logstream['logStreamName']
+                logStreamName=logstream['logStreamName'],
+                startFromHead=True,
             )
         except ClientError as error:
             logging.error(error)
@@ -67,12 +69,9 @@ def main():
             event_raw = json.loads(event['message'])
 
             date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
-            try:
-                created_at = datetime.strptime(event_raw['detail']['pullStoppedAt'], date_format)
-                started_at = datetime.strptime(event_raw['detail']['startedAt'], date_format)
-            except KeyError:
-                # incomplete event, we just skip it
-                continue
+
+            created_at = datetime.strptime(event_raw['detail']['pullStoppedAt'], date_format)
+            started_at = datetime.strptime(event_raw['detail']['startedAt'], date_format)
 
             delta = started_at - created_at
 
@@ -100,7 +99,7 @@ def main():
 
     # If I wanted to look at the average pull time, I can group the DataFrame by task_image.
     print("Printing Average Pull Time Grouped By Task Family")
-    df2 = df[['task_image', 'start_timedelta_seconds']].groupby(['task_image']).mean()
+    df2 = df[['task_image', 'start_timedelta_seconds']].groupby(['task_image']).agg(['min', 'max', 'mean', 'median'])
     print(df2.to_markdown())
 
 

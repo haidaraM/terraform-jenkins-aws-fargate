@@ -111,12 +111,22 @@ variable "controller_docker_image" {
   type        = string
   description = "Jenkins Controller docker image to use"
   default     = "elmhaidara/jenkins-aws-fargate:2.420"
+
+  validation {
+    condition     = can(regex("^.*:.*$", var.controller_docker_image))
+    error_message = "The controller_docker_image variable must be in the form <image>:<tag>"
+  }
 }
 
 variable "agent_docker_image" {
   type        = string
   description = "Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/"
   default     = "elmhaidara/jenkins-alpine-agent-aws:latest-alpine"
+
+  validation {
+    condition     = can(regex("^.*:.*$", var.agent_docker_image))
+    error_message = "The agent_docker_image variable must be in the form <image>:<tag>"
+  }
 }
 
 variable "controller_listening_port" {
@@ -177,4 +187,21 @@ variable "allowed_ip_addresses" {
   description = "List of allowed IP addresses to access the controller from the ALB"
   type        = set(string)
   default     = ["0.0.0.0/0"]
+}
+
+variable "soci" {
+  description = <<EOF
+Seekable OCI image config. See https://aws.amazon.com/fr/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci/.
+If enabled, Terraform will create two ECR repositories (one for the controller and one for the agent), push the images to ECR (from the default images in Dockerhub),
+build the SOCI indexes and push them to ECR as well. As such, you need to have Docker installed on your machine and be able to run it in privileged mode.
+
+You can optionally build the images and their index yourself, push them to ECR and update the variables `controller_docker_image` and
+`controller_docker_image` (set enabled to `false` in this case). See https://github.com/aws-samples/aws-fargate-seekable-oci-toolbox/blob/main/containerized-index-builder/README.md.
+This variable is just a convenient way to do it from Terraform. Prefer using the lambda function to build the index: https://github.com/aws-ia/cfn-ecr-aws-soci-index-builder.
+EOF
+  type = object({
+    enabled  = optional(bool, false)     # Whether to enable SOCI or not
+    env_vars = optional(map(string), {}) # Env vars to pass to the Docker runs when building the SOCI
+  })
+  default = {}
 }

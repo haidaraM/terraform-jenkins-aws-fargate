@@ -83,7 +83,7 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
   }
 
   container_definitions = templatefile("${path.module}/templates/ecs-task.template.json", {
-    image             = "${aws_ecr_repository.jenkins_controller.repository_url}:2.420.0"
+    image             = local.controller_docker_image
     region            = var.aws_region
     log_group_name    = aws_cloudwatch_log_group.jenkins_controller.id
     jenkins_http_port = var.controller_listening_port
@@ -109,8 +109,8 @@ resource "aws_ecs_service" "jenkins_controller" {
   name            = "jenkins-controller"
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.jenkins_controller.arn
-  desired_count   = 1
   # only one controller should be up and running. Open Source version of Jenkins is not adapted for multi controllers mode
+  desired_count   = 1
   launch_type      = "FARGATE"
   platform_version = var.fargate_platform_version
 
