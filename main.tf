@@ -121,7 +121,7 @@ resource "aws_ecs_service" "jenkins_controller" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.jenkins_controller.arn
   # only one controller should be up and running. Open Source version of Jenkins is not adapted for multi controllers mode
-  desired_count   = 1
+  desired_count    = 1
   launch_type      = "FARGATE"
   platform_version = var.fargate_platform_version
 
