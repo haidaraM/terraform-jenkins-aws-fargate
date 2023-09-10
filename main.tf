@@ -163,6 +163,14 @@ resource "aws_ecs_service" "jenkins_controller" {
     aws_lb_listener.agents_http_listener,
     aws_lb_listener.agents_jnlp_listener
   ]
+
+  lifecycle {
+    replace_triggered_by = [
+      # We recreate the service if the EFS is deleted and recreated. In that case, it doesn't make sense to keep
+      # the service running
+      aws_efs_file_system.jenkins_conf.id
+    ]
+  }
 }
 
 ############ Route53 and ACM

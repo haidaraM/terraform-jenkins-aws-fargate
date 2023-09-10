@@ -1,11 +1,9 @@
 locals {
-  soci_index_builder_image = "sociindexbuilder:latest"
-  soci_index_builder_dir   = "${path.module}/docker/containerized-index-builder"
   soci_images_to_push_ecr = var.soci.enabled ? {
     (var.agent_docker_image) : "${aws_ecr_repository.jenkins_agent[0].repository_url}:${local.agent_docker_image_version}"
     (var.controller_docker_image) : "${aws_ecr_repository.jenkins_controller[0].repository_url}:${local.controller_docker_image_version}"
   } : {}
-  soci_docker_run_env_vars = merge({ AWS_REGION = var.aws_region, IMAGE_ARCH = "linux/amd64" }, var.soci.env_vars)
+  docker_cmds_env_vars = merge({ AWS_REGION = var.aws_region, IMAGE_ARCH = "linux/amd64" }, var.soci.env_vars)
 }
 
 resource "aws_ecr_repository" "jenkins_agent" {
@@ -22,52 +20,47 @@ resource "aws_ecr_repository" "jenkins_controller" {
   force_delete         = true
 }
 
-/**
- This is just a convenient way to build and push the images to ECR. Usually, this is one outside of Terraform.
- If you are having trouble building image here, feel free to do it outside of Terraform.
- # TODO: push this image to DockerHub
-*/
-resource "terraform_data" "build_soci_index_builder" {
-  count = var.soci.enabled ? 1 : 0
-  triggers_replace = [
-    filebase64sha256("${local.soci_index_builder_dir}/Dockerfile"),
-    filebase64sha256("${local.soci_index_builder_dir}/script.sh"),
-  ]
+resource "terraform_data" "ecr_login" {
   provisioner "local-exec" {
-    working_dir = local.soci_index_builder_dir
-    command     = "docker build --tag ${local.soci_index_builder_image} ."
+    environment = local.docker_cmds_env_vars
+    command     = "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.caller.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
   }
 }
 
+/**
+ This is just a convenient way to build and push the images to ECR. Usually, this is done outside of Terraform.
+ If you are having trouble building image here, feel free to do it outside of Terraform.
+*/
 resource "terraform_data" "build_soci_indexes" {
   for_each = var.soci.enabled ? local.soci_images_to_push_ecr : {}
   triggers_replace = [
     each.key,
     each.value,
-    local.soci_docker_run_env_vars
+    local.docker_cmds_env_vars,
+    var.soci.index_builder_image
   ]
 
   provisioner "local-exec" {
     # Pull and push the default image to ECR WITHOUT the index
-    command = "docker pull ${each.key} && docker tag ${each.key} ${each.value} && docker push ${each.value}"
+    environment = local.docker_cmds_env_vars
+    command     = "docker pull ${each.key} && docker tag ${each.key} ${each.value} && docker push ${each.value}"
   }
 
   provisioner "local-exec" {
     # Push the SOCI index to ECR
-    environment = local.soci_docker_run_env_vars
-    working_dir = local.soci_index_builder_dir
+    environment = local.docker_cmds_env_vars
     command     = <<CMD
     docker run --rm --privileged \
-        ${join(" ", formatlist("--env %s", keys(local.soci_docker_run_env_vars)))} \
+        ${join(" ", formatlist("--env %s", keys(local.docker_cmds_env_vars)))} \
         --mount type=tmpfs,destination=/var/lib/containerd \
         --mount type=tmpfs,destination=/var/lib/soci-snapshotter-grpc \
         --volume $${HOME}/.aws:/root/.aws \
-        ${local.soci_index_builder_image} \
+        ${var.soci.index_builder_image} \
         ${each.value}
     CMD
   }
 
-  lifecycle {
-    replace_triggered_by = [terraform_data.build_soci_index_builder]
-  }
+  depends_on = [
+    terraform_data.ecr_login
+  ]
 }

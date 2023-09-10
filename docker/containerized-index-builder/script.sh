@@ -10,7 +10,7 @@ sleep 3
 # Test Containerd is working ok
 ctr version > /dev/null
 
-echo Pulling Container Image "$1"
+echo "Pulling Container Image "$1""
 
 # Log into ECR
 if [[ "$1" == public* ]]
@@ -31,9 +31,9 @@ ctr image pull \
   "$1" > /dev/null
 
 # Create SOCI Index
-echo Creating Soci Index
+echo "Creating Soci Index..."
 MIN_LAYER_SIZE_VALUE=${MIN_LAYER_SIZE:-10}
 soci create --platform="$ARCH_VALUE" --min-layer-size "$MIN_LAYER_SIZE_VALUE" "$1"
 
-echo Pushing Soci Index
+echo "Pushing Soci Index"
 soci push --platform="$ARCH_VALUE" --user AWS:"$PASSWORD" "$1"

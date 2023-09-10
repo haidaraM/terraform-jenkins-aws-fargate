@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -e
+set -x
+
 JENKINS_CONF_LOCAL_PATH="${JENKINS_HOME}/jenkins.yaml"
 
 if [[ -n "${JENKINS_CONF_S3_URL}"  ]]; then
@@ -9,7 +11,7 @@ if [[ -n "${JENKINS_CONF_S3_URL}"  ]]; then
   aws s3 cp "${JENKINS_CONF_S3_URL}" "${JENKINS_CONF_LOCAL_PATH}"
 else
   # see https://github.com/jenkinsci/configuration-as-code-plugin/issues/825
-  echo "Removing ${JENKINS_CONF_LOCAL_PATH} to avoid override existing configuration"
+  echo "Removing ${JENKINS_CONF_LOCAL_PATH} to avoid overriding existing configuration"
   rm -f "${JENKINS_CONF_LOCAL_PATH}"
 fi
 
