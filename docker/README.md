@@ -18,7 +18,7 @@ To build the image:
 docker build -f Dockerfile -t elmhaidara/jenkins-aws-fargate .
 ```
 
-You can pull it from Docker Hub: `docker pull elmhaidara/jenkins-aws-fargate:2.422`.
+You can pull it from Docker Hub: `docker pull elmhaidara/jenkins-aws-fargate:2.420`.
 
 ## Jenkins agents: Dockerfile.agent
 
