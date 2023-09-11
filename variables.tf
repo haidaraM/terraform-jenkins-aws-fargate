@@ -200,8 +200,8 @@ You can optionally build the images and their index yourself, push them to ECR a
 This variable is just a convenient way to do it from Terraform. Prefer using the lambda function to build the index: https://github.com/aws-ia/cfn-ecr-aws-soci-index-builder.
 EOF
   type = object({
-    enabled  = optional(bool, false)     # Whether to enable SOCI or not
-    env_vars = optional(map(string), {}) # Env vars to pass to the Docker related commands
+    enabled             = optional(bool, false)                                   # Whether to enable SOCI or not
+    env_vars            = optional(map(string), {})                               # Env vars to pass to the Docker related commands
     index_builder_image = optional(string, "elmhaidara/soci-index-builder:0.3.0") # Index builder image to use
   })
   default = {}
