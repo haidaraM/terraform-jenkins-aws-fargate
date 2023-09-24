@@ -53,6 +53,7 @@ resource "terraform_data" "build_soci_indexes" {
     docker run --rm --privileged \
         ${join(" ", formatlist("--env %s", keys(local.docker_cmds_env_vars)))} \
         --mount type=tmpfs,destination=/var/lib/containerd \
+        --platform linux/amd64 \
         --mount type=tmpfs,destination=/var/lib/soci-snapshotter-grpc \
         --volume $${HOME}/.aws:/root/.aws \
         ${var.soci.index_builder_image} \

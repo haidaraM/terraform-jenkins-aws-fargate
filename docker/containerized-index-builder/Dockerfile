@@ -1,10 +1,14 @@
-FROM public.ecr.aws/docker/library/alpine:latest as socicli
+FROM --platform=linux/amd64 golang:1.20-bullseye as builder
 
-ARG SOCIVER=0.4.0
-RUN wget https://github.com/awslabs/soci-snapshotter/releases/download/v$SOCIVER/soci-snapshotter-v$SOCIVER-linux-amd64-static.tar.gz && \
-    tar -zxvf soci-snapshotter-v$SOCIVER-linux-amd64-static.tar.gz soci
+ARG SOCIVER=eebd84e352a64731a92412447c6dbfcd198328cd
+# Install required dependencies to build: https://github.com/awslabs/soci-snapshotter/blob/main/docs/build.md
+RUN apt update && apt install -y zlib1g-dev
 
-FROM public.ecr.aws/amazonlinux/amazonlinux:2
+# Install
+RUN git clone https://github.com/awslabs/soci-snapshotter && cd soci-snapshotter && \
+    git checkout $SOCIVER && make
+
+FROM --platform=linux/amd64 public.ecr.aws/amazonlinux/amazonlinux:2
 
 RUN yum install -y unzip
 
@@ -14,7 +18,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$ARCH.zip" -o "awscliv2.
     unzip awscliv2.zip && \
     ./aws/install
 
-COPY --from=socicli /soci /usr/local/bin/soci
+COPY --from=builder /go/soci-snapshotter/out/soci /usr/local/bin/soci
 
 COPY --from=public.ecr.aws/docker/library/docker:latest /usr/local/bin/ctr /usr/local/bin/ctr
 COPY --from=public.ecr.aws/docker/library/docker:latest /usr/local/bin/containerd /usr/local/bin/containerd
