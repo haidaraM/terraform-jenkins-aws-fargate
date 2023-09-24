@@ -1,8 +1,8 @@
 FROM public.ecr.aws/docker/library/alpine:latest as socicli
 
-ARG SOCIVER=0.3.0
-RUN wget https://github.com/awslabs/soci-snapshotter/releases/download/v$SOCIVER/soci-snapshotter-$SOCIVER-linux-amd64-static.tar.gz && \
-    tar -zxvf soci-snapshotter-$SOCIVER-linux-amd64-static.tar.gz soci
+ARG SOCIVER=0.4.0
+RUN wget https://github.com/awslabs/soci-snapshotter/releases/download/v$SOCIVER/soci-snapshotter-v$SOCIVER-linux-amd64-static.tar.gz && \
+    tar -zxvf soci-snapshotter-v$SOCIVER-linux-amd64-static.tar.gz soci
 
 FROM public.ecr.aws/amazonlinux/amazonlinux:2
 
