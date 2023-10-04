@@ -16,4 +16,5 @@ else
 fi
 
 # entrypoint from the docker image
+echo "Starting Jenkins..."
 exec tini -- /usr/local/bin/jenkins.sh

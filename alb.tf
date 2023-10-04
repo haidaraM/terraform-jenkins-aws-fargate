@@ -25,7 +25,7 @@ resource "aws_alb_target_group" "jenkins_controller_tg" {
     path                = "/login"
     timeout             = 10
     interval            = 45
-    healthy_threshold   = 3
+    healthy_threshold   = 5
     unhealthy_threshold = 10
   }
 
