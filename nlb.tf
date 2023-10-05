@@ -23,7 +23,7 @@ resource "aws_lb_target_group" "nlb_agents_to_controller_http" {
     path                = "/login"
     port                = var.controller_listening_port
     healthy_threshold   = 5
-    unhealthy_threshold = 10
+    unhealthy_threshold = 6
     interval            = 45
   }
 
@@ -65,7 +65,7 @@ resource "aws_lb_target_group" "nlb_agents_to_controller_jnlp" {
     path                = "/login"
     port                = var.controller_listening_port
     healthy_threshold   = 5
-    unhealthy_threshold = 10
+    unhealthy_threshold = 6
     interval            = 45
   }
 

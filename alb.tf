@@ -24,9 +24,9 @@ resource "aws_alb_target_group" "jenkins_controller_tg" {
   health_check {
     path                = "/login"
     timeout             = 10
-    interval            = 45
+    interval            = 30
     healthy_threshold   = 5
-    unhealthy_threshold = 10
+    unhealthy_threshold = 6
   }
 
   lifecycle {

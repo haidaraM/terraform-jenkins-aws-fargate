@@ -77,7 +77,7 @@ variable "agents_cpu_memory" {
 variable "target_groups_deregistration_delay" {
   description = "Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. It has a direct impact on the time it takes to run the controller."
   type        = number
-  default     = 60
+  default     = 30
 }
 
 variable "controller_deployment_percentages" {
