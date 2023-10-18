@@ -21,6 +21,7 @@ resource "aws_ecr_repository" "jenkins_controller" {
 }
 
 resource "terraform_data" "ecr_login" {
+  count                = var.soci.enabled ? 1 : 0
   provisioner "local-exec" {
     environment = local.docker_cmds_env_vars
     command     = "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.caller.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
@@ -47,7 +48,7 @@ resource "terraform_data" "build_soci_indexes" {
   }
 
   provisioner "local-exec" {
-    # Push the SOCI index to ECR
+    # Build and Push the SOCI index to ECR
     environment = local.docker_cmds_env_vars
     command     = <<CMD
     docker run --rm --privileged \

@@ -202,7 +202,7 @@ EOF
   type = object({
     enabled             = optional(bool, false)                                   # Whether to enable SOCI or not
     env_vars            = optional(map(string), {})                               # Env vars to pass to the Docker related commands
-    index_builder_image = optional(string, "elmhaidara/soci-index-builder:342eff60b4eee144fe7b92a125a79a301e53725a") # Index builder image to use
+    index_builder_image = optional(string, "elmhaidara/soci-index-builder:31a8bcc683f7522d146d0505d034558909e53433") # Index builder image to use
   })
   default = {}
 }

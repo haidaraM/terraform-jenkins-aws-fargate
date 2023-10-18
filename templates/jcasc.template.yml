@@ -126,8 +126,6 @@ jobs: # this requires the job-dsl plugin
                   }
                   stage ('Print ECS metadata') {
                     steps {
-                      sh "echo 'Container Metadata'"
-                      sh "curl -s $ECS_CONTAINER_METADATA_URI_V4 | jq"
                       sh "echo 'Task Metadata'"
                       sh "curl -s $ECS_CONTAINER_METADATA_URI_V4/task | jq"
                     }
