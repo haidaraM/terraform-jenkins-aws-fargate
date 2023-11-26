@@ -1,46 +1,36 @@
 import json
-import logging
 import os
 import sys
 from datetime import datetime
 
 import boto3
 import pandas as pd
-
 from botocore.exceptions import ClientError
-
-root = logging.getLogger()
-if root.handlers:
-    for handler in root.handlers:
-        root.removeHandler(handler)
-logging.basicConfig(format="%(asctime)s %(message)s", level=logging.INFO)
 
 
 def main():
     # Ensure the User has set the LOG GROUP NAME for the container.
     if "LOG_GROUP_NAME" not in os.environ:
-        logging.info("LOG_GROUP_NAME has not been set in environment variables")
+        print("LOG_GROUP_NAME has not been set in environment variables")
         sys.exit(1)
 
     log_group_name = os.environ.get("LOG_GROUP_NAME")
-    logging.info("Using Log Group %s", log_group_name)
+    print("Using Log Group %s", log_group_name)
 
     # Ensure the User has set the AWS REGION for the container.
     if "AWS_REGION" not in os.environ:
-        logging.info("AWS_REGION has not been set in environment variables")
+        print("AWS_REGION has not been set in environment variables")
         sys.exit(1)
 
-    aws_region = os.environ.get("AWS_REGION")
-    logging.info("Using AWS Region %s", aws_region)
-
     # Get all the Log Streams from the Cloudwatch logs API
-    client = boto3.client("logs", region_name=aws_region)
-    logging.info("Getting Log Streams for Log Group %s", log_group_name)
+    client = boto3.client("logs", region_name=os.environ.get("AWS_REGION"))
+    print("Getting Log Streams for Log Group %s", log_group_name)
+
     try:
         # TODO: make this work for more than 50 log streams
         response = client.describe_log_streams(logGroupName=log_group_name, limit=50)
     except ClientError as error:
-        logging.error(error)
+        print(error)
         sys.exit(1)
 
     # For Each Log Group Stream find all the log events. For Each event
@@ -48,7 +38,7 @@ def main():
     # them to an array of all the Tasks.
     all_tasks = []
     for logstream in response["logStreams"]:
-        logging.info("Getting Log Events for Log Stream %s", logstream["logStreamName"])
+        print("Getting Log Events for Log Stream %s", logstream["logStreamName"])
         try:
             response = client.get_log_events(
                 logGroupName=log_group_name,
@@ -56,7 +46,7 @@ def main():
                 startFromHead=True,
             )
         except ClientError as error:
-            logging.error(error)
+            print(error)
             sys.exit(1)
 
         events = response["events"]
@@ -95,8 +85,8 @@ def main():
 
     # This shows all the raw data in my table.
     print("Printing Raw Table")
-    print(df.to_markdown())
-    print()
+    print(df.to_markdown(), flush=True)
+    print(flush=True)
 
     # If I wanted to look at the average pull time, I can group the DataFrame by task_image.
     print("Printing Average Pull Time Grouped By Task Family")

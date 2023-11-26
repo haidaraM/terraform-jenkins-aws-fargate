@@ -104,18 +104,18 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
     jenkins_home                      = local.jenkins_home
   })
 
-  /*
-  # Fixme: find a way to recreate the task definition even though we are not using SOCI
+
+  # TODO: find a way to recreate the task definition even though we are not using SOCI
   lifecycle {
     replace_triggered_by = [
-      terraform_data.build_soci_indexes
+      terraform_data.build_push_soci_indexes
     ]
   }
-  */
+
 
   # Making sure the indexes are built before the task definition is created/updated
   depends_on = [
-    terraform_data.build_soci_indexes
+    terraform_data.build_push_soci_indexes
   ]
 }
 

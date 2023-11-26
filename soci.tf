@@ -3,7 +3,7 @@ locals {
     (var.agent_docker_image) : "${aws_ecr_repository.jenkins_agent[0].repository_url}:${local.agent_docker_image_version}"
     (var.controller_docker_image) : "${aws_ecr_repository.jenkins_controller[0].repository_url}:${local.controller_docker_image_version}"
   } : {}
-  docker_cmds_env_vars = merge({ AWS_REGION = var.aws_region, IMAGE_ARCH = "linux/amd64" }, var.soci.env_vars)
+  docker_cmds_env_vars = var.soci.enabled ? merge({ AWS_REGION = var.aws_region, IMAGE_ARCH = "linux/amd64" }, var.soci.env_vars) : {}
 }
 
 resource "aws_ecr_repository" "jenkins_agent" {
@@ -21,7 +21,7 @@ resource "aws_ecr_repository" "jenkins_controller" {
 }
 
 resource "terraform_data" "ecr_login" {
-  count                = var.soci.enabled ? 1 : 0
+  count = var.soci.enabled ? 1 : 0
   provisioner "local-exec" {
     environment = local.docker_cmds_env_vars
     command     = "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.caller.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
@@ -30,9 +30,9 @@ resource "terraform_data" "ecr_login" {
 
 /**
  This is just a convenient way to build and push the images to ECR. Usually, this is done outside of Terraform.
- If you are having trouble building image here, feel free to do it outside of Terraform.
+ If you are having trouble building image here, feel free to do it outside of Terraform and update the images in the variables.
 */
-resource "terraform_data" "build_soci_indexes" {
+resource "terraform_data" "build_push_soci_indexes" {
   for_each = var.soci.enabled ? local.soci_images_to_push_ecr : {}
   triggers_replace = [
     each.key,
