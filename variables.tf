@@ -121,7 +121,7 @@ variable "controller_docker_image" {
 variable "agent_docker_image" {
   type        = string
   description = "Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/"
-  default     = "elmhaidara/jenkins-alpine-agent-aws:latest-alpine"
+  default     = "elmhaidara/jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17"
 
   validation {
     condition     = can(regex("^.*:.*$", var.agent_docker_image))

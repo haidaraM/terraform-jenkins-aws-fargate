@@ -1,13 +1,11 @@
 # This is just an example of a Jenkins agent
-FROM --platform=linux/amd64 jenkins/inbound-agent:latest-alpine
+FROM --platform=linux/amd64 jenkins/inbound-agent:3192.v713e3b_039fb_e-4-alpine-jdk17
 
 # use root user to be able to install packages
 USER root
 
 # Install some packages
-# TODO: install awscli v2
-RUN apk add --no-cache py3-pip python3 curl jq && pip3 install awscli
+RUN apk add --no-cache py3-pip python3 curl jq aws-cli
 
 # Back to Jenkins (Best practice)
 USER jenkins
-

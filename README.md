@@ -186,7 +186,7 @@ For more information about SOCI, see:
 | <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | Private subnets to deploy Jenkins and the internal NLB | `set(string)` | n/a | yes |
 | <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | Public subnets to deploy the load balancer | `set(string)` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC id | `string` | n/a | yes |
-| <a name="input_agent_docker_image"></a> [agent\_docker\_image](#input\_agent\_docker\_image) | Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/ | `string` | `"elmhaidara/jenkins-alpine-agent-aws:latest-alpine"` | no |
+| <a name="input_agent_docker_image"></a> [agent\_docker\_image](#input\_agent\_docker\_image) | Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/ | `string` | `"elmhaidara/jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17"` | no |
 | <a name="input_agents_cpu_memory"></a> [agents\_cpu\_memory](#input\_agents\_cpu\_memory) | CPU and memory for the agent example. Note that all combinations are not supported with Fargate. | <pre>object({<br>    memory = number<br>    cpu    = number<br>  })</pre> | <pre>{<br>  "cpu": 2048,<br>  "memory": 4096<br>}</pre> | no |
 | <a name="input_agents_log_retention_days"></a> [agents\_log\_retention\_days](#input\_agents\_log\_retention\_days) | Retention days for Agents log group | `number` | `5` | no |
 | <a name="input_allowed_ip_addresses"></a> [allowed\_ip\_addresses](#input\_allowed\_ip\_addresses) | List of allowed IP addresses to access the controller from the ALB | `set(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
