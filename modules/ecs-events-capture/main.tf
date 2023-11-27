@@ -17,7 +17,6 @@ resource "aws_cloudwatch_event_rule" "task_state_change" {
   })
 }
 
-# TODO: change the log group name and use cloudwatch resource policy
 resource "aws_cloudwatch_log_group" "task_state_change" {
   name              = "/aws/events/${var.name_prefix}/task-state-change"
   retention_in_days = 30

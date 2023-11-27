@@ -3,7 +3,16 @@
 This module creates the resources required to capture the relevant ECS Task events in a CloudWatch Log Group. The events
 are used to calculate the startup time of the ECS Tasks (the controller and the agents).
 
-To calculate the startup time, a Python script is used to get and parse the events from CloudWatch.
+To calculate the startup time, a Python script is used to get and parse the events from CloudWatch:
+
+```shell
+cd src
+pip3 install -r requirements.txt
+export LOG_GROUP_NAME="" # The name of log group created by the module. See the Terraform output `log_group_name`
+python3 main.py
+```
+
+Once finished, you will get something like this: TODO
 
 ## Usage
 
@@ -46,5 +55,5 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cloudwatch_log_group_name"></a> [cloudwatch\_log\_group\_name](#output\_cloudwatch\_log\_group\_name) | The name of the CloudWatch Log Group containing the ECS events |
+| <a name="output_log_group_name"></a> [log\_group\_name](#output\_log\_group\_name) | The name of the CloudWatch Log Group containing the ECS events |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

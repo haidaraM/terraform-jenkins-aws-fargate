@@ -1,7 +1,7 @@
 # Containerized SOCI Index Builder
 
-Builds a SOCI index in a container. Useful when testing locally. Otherwise, use the more scalable
-[SOCI Lambda index builder.](https://github.com/aws-ia/cfn-ecr-aws-soci-index-builder)
+Builds a SOCI index in a container. Useful when testing locally and we don't want to deploy a lambda function.
+Otherwise, use the more scalable [SOCI Lambda index builder.](https://github.com/aws-ia/cfn-ecr-aws-soci-index-builder)
 
 Based on https://github.com/aws-samples/aws-fargate-seekable-oci-toolbox/blob/main/containerized-index-builder/README.md
 

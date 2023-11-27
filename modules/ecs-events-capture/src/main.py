@@ -94,7 +94,7 @@ def main():
         df[["task_image", "start_timedelta_seconds"]]
         .groupby(["task_image"])
         .agg(
-            nb_tasks=("task_image", "count"),
+            nb_runs=("task_image", "count"),
             min_start_time=("start_timedelta_seconds", "min"),
             max_start_time=("start_timedelta_seconds", "max"),
             mean_start_time=("start_timedelta_seconds", "mean"),

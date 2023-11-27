@@ -206,3 +206,9 @@ EOF
   })
   default = {}
 }
+
+variable "capture_ecs_events" {
+  description = "Whether to capture ECS events in CloudWatch Logs"
+  type        = bool
+  default     = true
+}

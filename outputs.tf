@@ -34,3 +34,8 @@ output "ecr_images" {
     agent      = "${aws_ecr_repository.jenkins_agent[0].repository_url}:${local.agent_docker_image_version}"
   } : null
 }
+
+output "ecs_events_log_group_name" {
+  description = "ECS events log group"
+  value       = var.soci.enabled ? module.ecs_events[0].log_group_name : null
+}
