@@ -110,7 +110,7 @@ variable "agents_log_retention_days" {
 variable "controller_docker_image" {
   type        = string
   description = "Jenkins Controller docker image to use"
-  default     = "elmhaidara/jenkins-aws-fargate:2.420"
+  default     = "elmhaidara/jenkins-aws-fargate:2.433"
 
   validation {
     condition     = can(regex("^.*:.*$", var.controller_docker_image))
