@@ -84,8 +84,6 @@ For more information about SOCI, see:
 - docs.aws.amazon.com/AmazonECS/latest/userguide/container-considerations.html
 - aws.amazon.com/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci
 
-
-
 ## Docs
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
