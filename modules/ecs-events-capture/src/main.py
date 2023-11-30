@@ -63,6 +63,10 @@ def main():
                 event_raw["detail"]["startedAt"], date_format
             )
 
+            if started_at < created_at:
+                # Don't know yet how this is possible but let's ignore it for now
+                continue
+
             delta = started_at - created_at
 
             # We have only one container per task, so we can just take the first one
