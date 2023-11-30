@@ -38,7 +38,7 @@ resource "terraform_data" "build_push_soci_indexes" {
     each.key,
     each.value,
     local.docker_cmds_env_vars,
-    var.soci.index_builder_image
+    var.soci.index_builder_image,
   ]
 
   provisioner "local-exec" {

@@ -84,9 +84,8 @@ def main():
     df = pd.DataFrame(all_tasks)
 
     # This shows all the raw data in my table.
-    print("Printing Raw Table")
-    print(df.to_markdown(), flush=True)
-    print(flush=True)
+    # print("Printing Raw Table")
+    # print(df.to_markdown(), flush=True)
 
     # If I wanted to look at the average pull time, I can group the DataFrame by task_image.
     print("Printing Average Pull Time Grouped By Task Family")
