@@ -8,7 +8,7 @@ ECS_CLUSTER_NAME="jenkins-cluster"
 ECS_SERVICE_NAME="jenkins-controller"
 
 # Number of updates
-NUM_UPDATES=8
+NUM_UPDATES=9
 
 # AWS CLI command to force update ECS service
 update_service() {

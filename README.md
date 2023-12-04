@@ -78,6 +78,16 @@ To compare the startup time of the tasks, a local module [modules/ecs-events-cap
 used to capture the relevant ECS Task events in a CloudWatch Log Group. After some runs, you
 can run the Python script (check the [README](modules/ecs-events-capture/README.md) of the module).
 
+Here are some numbers in the table below:
+
+ - The images on ECR are with SOCI
+ - The images on Dockerhub are without SOCI
+
+| task_image                                                                                 |   nb_runs |   min_start_time |   max_start_time |   mean_start_time |   median_start_time |
+|:-------------------------------------------------------------------------------------------|----------:|-----------------:|-----------------:|------------------:|--------------------:|
+| xxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-agent:3192.v713e3b_039fb_e-4-alpine-jdk17 |        12 |            0.124 |            0.753 |           0.41075 |              0.3825 |
+| xxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-controller:2.433                          |        12 |           10.855 |           20.917 |          16.1846  |             16.278  |
+
 For more information about SOCI, see:
 
 - aws.amazon.com/fr/blogs/containers/under-the-hood-lazy-loading-container-images-with-seekable-oci-and-aws-fargate
