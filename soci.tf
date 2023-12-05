@@ -8,7 +8,7 @@ locals {
 
 resource "aws_ecr_repository" "jenkins_agent" {
   count                = var.soci.enabled ? 1 : 0
-  name                 = "jenkins-agent"
+  name                 = "jenkins-alpine-agent-aws"
   image_tag_mutability = "IMMUTABLE"
   force_delete         = true
 }
@@ -20,6 +20,11 @@ resource "aws_ecr_repository" "jenkins_controller" {
   force_delete         = true
 }
 
+/**
+ If you are having the error "denied: Your authorization token has expired. Reauthenticate and try again." when running terraform apply,
+ taint this resource and run terraform apply again: terraform taint 'terraform_data.ecr_login[0]'.
+ The reason for this is that the ECR login token is valid for 12 hours.
+*/
 resource "terraform_data" "ecr_login" {
   count = var.soci.enabled ? 1 : 0
   provisioner "local-exec" {

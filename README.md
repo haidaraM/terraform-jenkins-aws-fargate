@@ -65,9 +65,9 @@ Install them and restart the controller.
 
 ## Faster startup of tasks with SOCI (Optional)
 
-To speed up the startup of the controller and the agents (**by up to 30%**), you can use the SOCI feature (Seekable OCI
-image config) by
-setting the input variable `soci.enabled` to `true` (see below for more details about the input variables).
+To speed up the startup of the controller and the agents, you can use the SOCI feature (Seekable OCI
+image config) by setting the input variable `soci.enabled` to `true` (see below for more details about the input
+variables).
 
 This requires a recent version of the Fargate platform (>= 1.4.0). When you set this to true,
 the [index builder](docker/containerized-index-builder)
@@ -78,32 +78,35 @@ To compare the startup time of the tasks, a local module [modules/ecs-events-cap
 used to capture the relevant ECS Task events in a CloudWatch Log Group. After some runs, you
 can run the Python script (check the [README](modules/ecs-events-capture/README.md) of the module).
 
-Here are some numbers in the tables below for the controller and the agent with the following image sizes:
+Here are some numbers (in seconds) in the tables below for the controller and the agent with the following images built
+from [here](./docker/):
 
 - Controller version 2.433: 1.12 GB
 - Agent version 3192.v713e3b_039fb_e-4-alpine-jdk17: 0.315 GB
 
 **Without SOCI:**
 
-| task_image                                                              | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
-|:------------------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
-| elmhaidara/jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          1.204 |           2.15 |         1.66583 |            1.6445 |
-| elmhaidara/jenkins-aws-fargate:2.433                                    |      12 |         15.132 |         25.139 |         20.5679 |            20.707 |
+| task_image                                                   | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
+|:-------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
+| jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          1.204 |           2.15 |         1.66583 |            1.6445 |
+| jenkins-aws-fargate:2.433                                    |      12 |         15.132 |         25.139 |         20.5679 |            20.707 |
 
 **With SOCI:**
 
 > Note that SOCI only works with the private ECR repositories at the moment.
 
-| task_image                                                                                 | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
-|:-------------------------------------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
-| xxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-agent:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          0.124 |          0.753 |         0.41075 |            0.3825 |
-| xxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-controller:2.433                          |      12 |         10.855 |         20.917 |         16.1846 |            16.278 |
+| task_image                                                   | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
+|:-------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
+| jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          0.124 |          0.753 |         0.41075 |            0.3825 |
+| jenkins-controller:2.433                                     |      12 |         10.855 |         20.917 |         16.1846 |            16.278 |
 
-For more information about SOCI, see:
+In a nutshell, **on average, the startup time of the controller and the agent are reduced by 21% and 75% respectively.**
 
-- aws.amazon.com/fr/blogs/containers/under-the-hood-lazy-loading-container-images-with-seekable-oci-and-aws-fargate
-- docs.aws.amazon.com/AmazonECS/latest/userguide/container-considerations.html
-- aws.amazon.com/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci
+For more information about SOCI, see the following links:
+
+- [Under the hood: Lazy Loading Container Images with Seekable OCI and AWS Fargate](https://aws.amazon.com/fr/blogs/containers/under-the-hood-lazy-loading-container-images-with-seekable-oci-and-aws-fargate)
+- [https://docs.aws.amazon.com/AmazonECS/latest/userguide/container-considerations.html](docs.aws.amazon.com/AmazonECS/latest/userguide/container-considerations.html)
+- [AWS Fargate Enables Faster Container Startup using Seekable OCI](aws.amazon.com/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci)
 
 ## Docs
 
