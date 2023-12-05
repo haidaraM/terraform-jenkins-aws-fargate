@@ -1,3 +1,14 @@
+# v2.2.0
+
+- Add support for Fargate SOCI. See https://github.com/haidaraM/terraform-jenkins-aws-fargate/pull/7
+- Update AWS providers to `~> 5`
+- Update Jenkins controller to `2.433` and the plugins
+- Update the agent to `3192.v713e3b_039fb_e-4-alpine-jdk17` and do not use the latest tag by default anymore. Install
+  the AWSCLI in the agent image.
+- Update the default job created by the configuration as code.
+- Reduce the target group deregistration delay to 10 seconds for faster update of the controller.
+- fix: Add missing permissions to the controller
+
 # v2.1.0
 
 - fix: Do not use S3 ACL anymore. See this
