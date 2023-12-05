@@ -63,6 +63,51 @@ terraform output jenkins_credentials
 The first time you access the controller, the `Getting started` guide will ask you to install the recommended plugins.
 Install them and restart the controller.
 
+## Faster startup of tasks with SOCI (Optional)
+
+To speed up the startup of the controller and the agents, you can use the SOCI feature (Seekable OCI
+image config) by setting the input variable `soci.enabled` to `true` (see below for more details about the input
+variables).
+
+This requires a recent version of the Fargate platform (>= 1.4.0). When you set this to true,
+the [index builder](docker/containerized-index-builder)
+will build the SOCI indexes **locally** and push them to ECR. This can take a while (around ~5 minutes) and requires
+Docker to be installed on your machine and be able to run it in privileged mode.
+
+To compare the startup time of the tasks, a local module [modules/ecs-events-capture](./modules/ecs-events-capture) is
+used to capture the relevant ECS Task events in a CloudWatch Log Group. After some runs, you
+can run the Python script (check the [README](modules/ecs-events-capture/README.md) of the module).
+
+Here are some numbers (in seconds) in the tables below for the controller and the agent with the following images built
+from [here](./docker/):
+
+- Controller version 2.433: 1.12 GB
+- Agent version 3192.v713e3b_039fb_e-4-alpine-jdk17: 0.315 GB
+
+**Without SOCI:**
+
+| task_image                                                   | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
+|:-------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
+| jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          1.204 |           2.15 |         1.66583 |            1.6445 |
+| jenkins-aws-fargate:2.433                                    |      12 |         15.132 |         25.139 |         20.5679 |            20.707 |
+
+**With SOCI:**
+
+> Note that SOCI only works with the private ECR repositories at the moment.
+
+| task_image                                                   | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
+|:-------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
+| jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          0.124 |          0.753 |         0.41075 |            0.3825 |
+| jenkins-controller:2.433                                     |      12 |         10.855 |         20.917 |         16.1846 |            16.278 |
+
+In a nutshell, **on average, the startup time of the controller and the agent are reduced by 21% and 75% respectively.**
+
+For more information about SOCI, see the following links:
+
+- [Under the hood: Lazy Loading Container Images with Seekable OCI and AWS Fargate](https://aws.amazon.com/fr/blogs/containers/under-the-hood-lazy-loading-container-images-with-seekable-oci-and-aws-fargate)
+- [https://docs.aws.amazon.com/AmazonECS/latest/userguide/container-considerations.html](docs.aws.amazon.com/AmazonECS/latest/userguide/container-considerations.html)
+- [AWS Fargate Enables Faster Container Startup using Seekable OCI](https://aws.amazon.com/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci)
+
 ## Docs
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -71,19 +116,22 @@ Install them and restart the controller.
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3 |
 
 ### Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 4 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3 |
+| <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ### Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_ecs_events"></a> [ecs\_events](#module\_ecs\_events) | ./modules/ecs-events-capture | n/a |
 
 ### Resources
 
@@ -100,6 +148,8 @@ No modules.
 | [aws_cloudwatch_metric_alarm.efs_burst_credit_balance](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_cloudwatch_metric_alarm.jenkins_high_cpu](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_cloudwatch_metric_alarm.jenkins_high_memory](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
+| [aws_ecr_repository.jenkins_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository) | resource |
+| [aws_ecr_repository.jenkins_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository) | resource |
 | [aws_ecs_cluster.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_cluster) | resource |
 | [aws_ecs_cluster_capacity_providers.capacity_providers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_cluster_capacity_providers) | resource |
 | [aws_ecs_service.jenkins_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
@@ -143,6 +193,9 @@ No modules.
 | [aws_security_group_rule.jenkins_controller_ingress_alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_sns_topic.alarms_topic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [random_password.admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [terraform_data.build_and_push_soci_indexes](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.ecr_login](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.trigger_controller_task_def_replacement](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [aws_caller_identity.caller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.controller_ecs_task](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.ecs_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -156,14 +209,15 @@ No modules.
 | <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | Private subnets to deploy Jenkins and the internal NLB | `set(string)` | n/a | yes |
 | <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | Public subnets to deploy the load balancer | `set(string)` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC id | `string` | n/a | yes |
-| <a name="input_agent_docker_image"></a> [agent\_docker\_image](#input\_agent\_docker\_image) | Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/ | `string` | `"elmhaidara/jenkins-alpine-agent-aws:latest-alpine"` | no |
+| <a name="input_agent_docker_image"></a> [agent\_docker\_image](#input\_agent\_docker\_image) | Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/ | `string` | `"elmhaidara/jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17"` | no |
 | <a name="input_agents_cpu_memory"></a> [agents\_cpu\_memory](#input\_agents\_cpu\_memory) | CPU and memory for the agent example. Note that all combinations are not supported with Fargate. | <pre>object({<br>    memory = number<br>    cpu    = number<br>  })</pre> | <pre>{<br>  "cpu": 2048,<br>  "memory": 4096<br>}</pre> | no |
 | <a name="input_agents_log_retention_days"></a> [agents\_log\_retention\_days](#input\_agents\_log\_retention\_days) | Retention days for Agents log group | `number` | `5` | no |
 | <a name="input_allowed_ip_addresses"></a> [allowed\_ip\_addresses](#input\_allowed\_ip\_addresses) | List of allowed IP addresses to access the controller from the ALB | `set(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The AWS region in which deploy the resources | `string` | `"eu-west-1"` | no |
+| <a name="input_capture_ecs_events"></a> [capture\_ecs\_events](#input\_capture\_ecs\_events) | Whether to capture ECS events in CloudWatch Logs | `bool` | `true` | no |
 | <a name="input_controller_cpu_memory"></a> [controller\_cpu\_memory](#input\_controller\_cpu\_memory) | CPU and memory for Jenkins controller. Note that all combinations are not supported with Fargate. | <pre>object({<br>    memory = number<br>    cpu    = number<br>  })</pre> | <pre>{<br>  "cpu": 2048,<br>  "memory": 4096<br>}</pre> | no |
 | <a name="input_controller_deployment_percentages"></a> [controller\_deployment\_percentages](#input\_controller\_deployment\_percentages) | The Min and Max percentages of Controller instance to keep when updating the service. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service.html.<br>These default values cause the ECS to stop the controller before starting a new one. This is to avoid having 2 controllers running at the same time. | <pre>object({<br>    min = number<br>    max = number<br>  })</pre> | <pre>{<br>  "max": 100,<br>  "min": 0<br>}</pre> | no |
-| <a name="input_controller_docker_image"></a> [controller\_docker\_image](#input\_controller\_docker\_image) | Jenkins Controller docker image to use | `string` | `"elmhaidara/jenkins-aws-fargate:2.420"` | no |
+| <a name="input_controller_docker_image"></a> [controller\_docker\_image](#input\_controller\_docker\_image) | Jenkins Controller docker image to use | `string` | `"elmhaidara/jenkins-aws-fargate:2.433"` | no |
 | <a name="input_controller_docker_user_uid_gid"></a> [controller\_docker\_user\_uid\_gid](#input\_controller\_docker\_user\_uid\_gid) | Jenkins User/Group ID inside the container. One should consider using access point. | `number` | `0` | no |
 | <a name="input_controller_java_opts"></a> [controller\_java\_opts](#input\_controller\_java\_opts) | JENKINS\_OPTS to pass to the controller | `string` | `""` | no |
 | <a name="input_controller_jnlp_port"></a> [controller\_jnlp\_port](#input\_controller\_jnlp\_port) | JNLP port used by Jenkins agent to communicate with the controller | `number` | `50000` | no |
@@ -178,7 +232,8 @@ No modules.
 | <a name="input_fargate_platform_version"></a> [fargate\_platform\_version](#input\_fargate\_platform\_version) | Fargate platform version to use. Must be >= 1.4.0 to be able to use Fargate | `string` | `"1.4.0"` | no |
 | <a name="input_route53_subdomain"></a> [route53\_subdomain](#input\_route53\_subdomain) | The subdomain to use for Jenkins Controller. Used when var.route53\_zone\_name is not empty | `string` | `"jenkins"` | no |
 | <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | A Route53 zone name to use to create a DNS record for the Jenkins Controller. Required for HTTPs. | `string` | `""` | no |
-| <a name="input_target_groups_deregistration_delay"></a> [target\_groups\_deregistration\_delay](#input\_target\_groups\_deregistration\_delay) | Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. It has a direct impact on the time it takes to run the controller. | `number` | `60` | no |
+| <a name="input_soci"></a> [soci](#input\_soci) | Seekable OCI image config. See https://aws.amazon.com/fr/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci/.<br>If enabled, Terraform will create two ECR repositories (one for the controller and one for the agent), push the images to ECR (from the default images in Dockerhub),<br>build the SOCI indexes and push them to ECR as well. As such, you need to have Docker installed on your machine and be able to run it in privileged mode.<br><br>You can optionally build the images and their index yourself, push them to ECR and update the variables `controller_docker_image` and<br>`controller_docker_image` (set enabled to `false` in this case). See https://github.com/aws-samples/aws-fargate-seekable-oci-toolbox/blob/main/containerized-index-builder/README.md.<br>This variable is just a convenient way to do it from Terraform. Prefer using the lambda function to build the index: https://github.com/aws-ia/cfn-ecr-aws-soci-index-builder. | <pre>object({<br>    enabled             = optional(bool, false)                                                                      # Whether to enable SOCI or not<br>    env_vars            = optional(map(string), {})                                                                  # Env vars to pass to the Docker related commands<br>    index_builder_image = optional(string, "elmhaidara/soci-index-builder:21ec5445ea5e0908861e60e92cbdcd70d3251c93") # Index builder image to use<br>  })</pre> | `{}` | no |
+| <a name="input_target_groups_deregistration_delay"></a> [target\_groups\_deregistration\_delay](#input\_target\_groups\_deregistration\_delay) | Amount of time for ALB/NLB to wait before changing the state of a deregistering target from draining to unused. It has a direct impact on the time it takes to run the controller. | `number` | `10` | no |
 
 ### Outputs
 
@@ -187,6 +242,8 @@ No modules.
 | <a name="output_agents_log_group"></a> [agents\_log\_group](#output\_agents\_log\_group) | Jenkins agents log group |
 | <a name="output_controller_config_on_s3"></a> [controller\_config\_on\_s3](#output\_controller\_config\_on\_s3) | Jenkins controller configuration file on S3 |
 | <a name="output_controller_log_group"></a> [controller\_log\_group](#output\_controller\_log\_group) | Jenkins controller log group |
+| <a name="output_ecr_images"></a> [ecr\_images](#output\_ecr\_images) | ECR images when SOCI is enabled |
+| <a name="output_ecs_events_log_group_name"></a> [ecs\_events\_log\_group\_name](#output\_ecs\_events\_log\_group\_name) | ECS events log group |
 | <a name="output_jenkins_credentials"></a> [jenkins\_credentials](#output\_jenkins\_credentials) | Credentials to access Jenkins via the public URL |
 | <a name="output_jenkins_public_url"></a> [jenkins\_public\_url](#output\_jenkins\_public\_url) | Public URL to access Jenkins |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -114,10 +114,20 @@ jobs: # this requires the job-dsl plugin
                   label '${example_agent_label}'
                 }
                 stages {
-                  stage ('Print env vars') {
+                  stage ('Caller identity: assumed role') {
                     steps {
                       sh "aws sts get-caller-identity"
+                    }
+                  }
+                  stage ('Print env vars') {
+                    steps {
                       sh "env"
+                    }
+                  }
+                  stage ('Print ECS metadata') {
+                    steps {
+                      sh "echo 'Task Metadata'"
+                      sh "curl -s $ECS_CONTAINER_METADATA_URI_V4/task | jq"
                     }
                   }
                 }

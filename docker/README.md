@@ -18,7 +18,7 @@ To build the image:
 docker build -f Dockerfile -t elmhaidara/jenkins-aws-fargate .
 ```
 
-You can pull it from docker hub: `docker pull elmhaidara/jenkins-aws-fargate:latest`.
+You can pull it from Docker Hub: `docker pull elmhaidara/jenkins-aws-fargate:2.420`.
 
 ## Jenkins agents: Dockerfile.agent
 
@@ -31,4 +31,11 @@ To build the image:
 docker build  -f Dockerfile.agent -t elmhaidara/jenkins-alpine-agent-aws .
 ```
 
-You can pull it from docker hub: `docker pull elmhaidara/jenkins-alpine-agent-aws:latest`.
+You can pull it from Docker Hub: `docker pull elmhaidara/jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17`.
+
+## Containerized Index Builder
+
+To build a SOCI index inside a container, you can use the [containerized-index-builder](./containerized-index-builder/)
+tool.
+
+The image is available on Docker Hub as `elmhaidara/soci-index-builder:21ec5445ea5e0908861e60e92cbdcd70d3251c93`.

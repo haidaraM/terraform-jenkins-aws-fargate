@@ -1,4 +1,10 @@
 locals {
+  agent_docker_image_version = split(":", var.agent_docker_image)[1]
+  agent_docker_image         = var.soci.enabled ? "${aws_ecr_repository.jenkins_agent[0].repository_url}:${local.agent_docker_image_version}" : var.agent_docker_image
+
+  controller_docker_image_version = split(":", var.controller_docker_image)[1]
+  controller_docker_image         = var.soci.enabled ? "${aws_ecr_repository.jenkins_controller[0].repository_url}:${local.controller_docker_image_version}" : var.controller_docker_image
+
   jcas = templatefile("${path.module}/templates/jcasc.template.yml", {
     ecs_cluster_arn                  = aws_ecs_cluster.cluster.arn
     region_name                      = var.aws_region
@@ -9,7 +15,7 @@ locals {
     agents_task_role_arn             = aws_iam_role.agents_ecs_task_role.arn
     example_agent_label              = "example-agent"
     example_agent_cpu_memory         = var.agents_cpu_memory
-    example_agent_docker_image       = var.agent_docker_image
+    example_agent_docker_image       = local.agent_docker_image
     jnlp_port                        = var.controller_jnlp_port
     jenkins_controller_num_executors = var.controller_num_executors
     jenkins_public_url               = local.jenkins_public_url

@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4"
+      version = "~> 5"
     }
     random = {
       source  = "hashicorp/random"
@@ -83,7 +83,7 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
   }
 
   container_definitions = templatefile("${path.module}/templates/ecs-task.template.json", {
-    image             = var.controller_docker_image
+    image             = local.controller_docker_image
     region            = var.aws_region
     log_group_name    = aws_cloudwatch_log_group.jenkins_controller.id
     jenkins_http_port = var.controller_listening_port
@@ -103,14 +103,26 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
     jenkins_user_uid                  = var.controller_docker_user_uid_gid
     jenkins_home                      = local.jenkins_home
   })
+
+
+  lifecycle {
+    replace_triggered_by = [ # Replace the task def if the image or index changes
+      terraform_data.trigger_controller_task_def_replacement.id
+    ]
+  }
+
+  # Making sure the indexes are built before the task definition is created/updated
+  depends_on = [
+    terraform_data.build_and_push_soci_indexes
+  ]
 }
 
 resource "aws_ecs_service" "jenkins_controller" {
   name            = "jenkins-controller"
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.jenkins_controller.arn
-  desired_count   = 1
   # only one controller should be up and running. Open Source version of Jenkins is not adapted for multi controllers mode
+  desired_count    = 1
   launch_type      = "FARGATE"
   platform_version = var.fargate_platform_version
 
@@ -152,6 +164,14 @@ resource "aws_ecs_service" "jenkins_controller" {
     aws_lb_listener.agents_http_listener,
     aws_lb_listener.agents_jnlp_listener
   ]
+
+  lifecycle {
+    replace_triggered_by = [
+      # We recreate the service if the EFS is deleted and recreated. In that case, it doesn't make sense to keep
+      # the service running
+      aws_efs_file_system.jenkins_conf.id
+    ]
+  }
 }
 
 ############ Route53 and ACM
