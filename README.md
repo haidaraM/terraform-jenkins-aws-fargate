@@ -92,7 +92,7 @@ Here are some numbers in the tables below for the controller and the agent with 
 
 **With SOCI:**
 
-Note that SOCI only works with the private ECR repositories.
+> Note that SOCI only works with the private ECR repositories at the moment.
 
 | task_image                                                                                 | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
 |:-------------------------------------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
