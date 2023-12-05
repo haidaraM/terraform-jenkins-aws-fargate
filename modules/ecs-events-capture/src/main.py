@@ -8,6 +8,39 @@ import pandas as pd
 from botocore.exceptions import ClientError
 
 
+def get_all_log_streams(client, log_group_name, max_items=500):
+    """
+
+    Get all the log streams for a given log group name until there are no more log streams to retrieve or the max_items
+    limit is reached or exceeded.
+    """
+    log_streams = []
+    next_token = None
+
+    while True:
+        kwargs = {
+            "logGroupName": log_group_name,
+            "limit": 50,
+        }
+
+        if next_token:
+            kwargs["nextToken"] = next_token
+
+        response = client.describe_log_streams(**kwargs)
+
+        log_streams.extend(response["logStreams"])
+
+        if len(log_streams) >= max_items:
+            break
+
+        if "nextToken" in response:
+            next_token = response["nextToken"]
+        else:
+            break
+
+    return log_streams
+
+
 def main():
     # Ensure the User has set the LOG GROUP NAME for the container.
     if "LOG_GROUP_NAME" not in os.environ:
@@ -26,18 +59,13 @@ def main():
     client = boto3.client("logs", region_name=os.environ.get("AWS_REGION"))
     print("Getting Log Streams for Log Group %s", log_group_name)
 
-    try:
-        # TODO: make this work for more than 50 log streams
-        response = client.describe_log_streams(logGroupName=log_group_name, limit=50)
-    except ClientError as error:
-        print(error)
-        sys.exit(1)
+    streams = get_all_log_streams(client, log_group_name)
 
     # For Each Log Group Stream find all the log events. For Each event
     # format the timestamps, retrieve the Task Id and the Family and add
     # them to an array of all the Tasks.
     all_tasks = []
-    for logstream in response["logStreams"]:
+    for logstream in streams:
         print("Getting Log Events for Log Stream %s", logstream["logStreamName"])
         try:
             response = client.get_log_events(
