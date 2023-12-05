@@ -106,7 +106,7 @@ For more information about SOCI, see the following links:
 
 - [Under the hood: Lazy Loading Container Images with Seekable OCI and AWS Fargate](https://aws.amazon.com/fr/blogs/containers/under-the-hood-lazy-loading-container-images-with-seekable-oci-and-aws-fargate)
 - [https://docs.aws.amazon.com/AmazonECS/latest/userguide/container-considerations.html](docs.aws.amazon.com/AmazonECS/latest/userguide/container-considerations.html)
-- [AWS Fargate Enables Faster Container Startup using Seekable OCI](aws.amazon.com/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci)
+- [AWS Fargate Enables Faster Container Startup using Seekable OCI](https://aws.amazon.com/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci)
 
 ## Docs
 
