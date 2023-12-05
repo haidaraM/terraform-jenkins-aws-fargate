@@ -78,15 +78,26 @@ To compare the startup time of the tasks, a local module [modules/ecs-events-cap
 used to capture the relevant ECS Task events in a CloudWatch Log Group. After some runs, you
 can run the Python script (check the [README](modules/ecs-events-capture/README.md) of the module).
 
-Here are some numbers in the table below:
+Here are some numbers in the tables below for the controller and the agent with the following image sizes:
 
- - The images on ECR are with SOCI
- - The images on Dockerhub are without SOCI
+- Controller version 2.433: 1.12 GB
+- Agent version 3192.v713e3b_039fb_e-4-alpine-jdk17: 0.315 GB
 
-| task_image                                                                                 |   nb_runs |   min_start_time |   max_start_time |   mean_start_time |   median_start_time |
-|:-------------------------------------------------------------------------------------------|----------:|-----------------:|-----------------:|------------------:|--------------------:|
-| xxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-agent:3192.v713e3b_039fb_e-4-alpine-jdk17 |        12 |            0.124 |            0.753 |           0.41075 |              0.3825 |
-| xxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-controller:2.433                          |        12 |           10.855 |           20.917 |          16.1846  |             16.278  |
+**Without SOCI:**
+
+| task_image                                                              | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
+|:------------------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
+| elmhaidara/jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          1.204 |           2.15 |         1.66583 |            1.6445 |
+| elmhaidara/jenkins-aws-fargate:2.433                                    |      12 |         15.132 |         25.139 |         20.5679 |            20.707 |
+
+**With SOCI:**
+
+Note that SOCI only works with the private ECR repositories.
+
+| task_image                                                                                 | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
+|:-------------------------------------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
+| xxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-agent:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          0.124 |          0.753 |         0.41075 |            0.3825 |
+| xxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-controller:2.433                          |      12 |         10.855 |         20.917 |         16.1846 |            16.278 |
 
 For more information about SOCI, see:
 
@@ -179,8 +190,9 @@ For more information about SOCI, see:
 | [aws_security_group_rule.jenkins_controller_ingress_alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_sns_topic.alarms_topic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [random_password.admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [terraform_data.build_push_soci_indexes](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.build_and_push_soci_indexes](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [terraform_data.ecr_login](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [terraform_data.trigger_controller_task_def_replacement](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [aws_caller_identity.caller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.controller_ecs_task](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.ecs_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |

@@ -28,12 +28,13 @@ resource "terraform_data" "ecr_login" {
   }
 }
 
+
 /**
  This is just a convenient way to build and push the images to ECR. Usually, this is done outside of Terraform.
  If you are having trouble building image here, feel free to do it outside of Terraform and update the images in the variables.
 */
-resource "terraform_data" "build_push_soci_indexes" {
-  for_each = var.soci.enabled ? local.soci_images_to_push_ecr : {}
+resource "terraform_data" "build_and_push_soci_indexes" {
+  for_each = local.soci_images_to_push_ecr
   triggers_replace = [
     each.key,
     each.value,
@@ -65,4 +66,11 @@ resource "terraform_data" "build_push_soci_indexes" {
   depends_on = [
     terraform_data.ecr_login
   ]
+}
+
+/**
+  This is a small hack to trigger the controller task definition replacement when the controller image/index is updated.
+*/
+resource "terraform_data" "trigger_controller_task_def_replacement" {
+  input = var.soci.enabled ? terraform_data.build_and_push_soci_indexes[var.controller_docker_image].id : null
 }

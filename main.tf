@@ -105,17 +105,15 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
   })
 
 
-  # TODO: find a way to recreate the task definition even though we are not using SOCI
   lifecycle {
-    replace_triggered_by = [
-      terraform_data.build_push_soci_indexes
+    replace_triggered_by = [ # Replace the task def if the image or index changes
+      terraform_data.trigger_controller_task_def_replacement.id
     ]
   }
 
-
   # Making sure the indexes are built before the task definition is created/updated
   depends_on = [
-    terraform_data.build_push_soci_indexes
+    terraform_data.build_and_push_soci_indexes
   ]
 }
 
