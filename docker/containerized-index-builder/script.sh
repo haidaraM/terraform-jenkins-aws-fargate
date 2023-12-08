@@ -10,8 +10,6 @@ sleep 3
 # Test Containerd is working ok
 ctr version > /dev/null
 
-echo "Pulling Container Image "$1""
-
 # Log into ECR
 if [[ "$1" == public* ]]
   then
@@ -24,7 +22,7 @@ else
 fi
 
 ARCH_VALUE=${IMAGE_ARCH:-"linux/amd64"}
-echo "Pulling image for platform: ${ARCH_VALUE}"
+echo "Pulling image "$1" for platform: ${ARCH_VALUE}"
 ctr image pull \
   --platform="${ARCH_VALUE}" \
   --user="AWS:${PASSWORD}" \

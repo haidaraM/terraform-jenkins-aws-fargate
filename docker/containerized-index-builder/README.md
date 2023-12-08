@@ -19,9 +19,10 @@ from [Docker Hub](https://hub.docker.com/repository/docker/elmhaidara/soci-index
 And then run the container image, passing in the workload image as the
 command (hello-world in this example).
 
-> The example below is fetching and generating an index for a container image
-> stored in Amazon ECS (Hence the AWS_REGION environment variable and the
-> `--volume` mount of the local AWS credentials).
+> The example below is fetching, generating and pushing an index for a container image
+> stored in Amazon ECR (979933559541.dkr.ecr.us-east-1.amazonaws.com/jenkins-agent:latest-alpine). 
+> Hence, the AWS_REGION environment variable and the `--volume` mount of the local AWS credentials.
+> After this command, you will have an index for the image in ECR.
 
 ```bash
 docker run \
@@ -32,7 +33,7 @@ docker run \
 	--mount type=tmpfs,destination=/var/lib/soci-snapshotter-grpc \
 	--platform linux/amd64 \
 	--volume ${HOME}/.aws:/root/.aws \
-	soci-index-builder \
+	elmhaidara/soci-index-builder \
 	979933559541.dkr.ecr.us-east-1.amazonaws.com/jenkins-agent:latest-alpine
 ```
 
