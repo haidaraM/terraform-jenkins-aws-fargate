@@ -34,7 +34,7 @@ docker run \
 	--platform linux/amd64 \
 	--volume ${HOME}/.aws:/root/.aws \
 	elmhaidara/soci-index-builder \
-	979933559541.dkr.ecr.us-east-1.amazonaws.com/jenkins-agent:latest-alpine
+	xxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/jenkins-agent:latest-alpine
 ```
 
 If you are using AWS profiles, you can pass them as environment variables to the
