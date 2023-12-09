@@ -12,6 +12,9 @@ export LOG_GROUP_NAME="" # The name of log group created by the module. See the 
 python3 main.py
 ```
 
+Based on https://github.com/aws-samples/aws-fargate-seekable-oci-toolbox/blob/main/ecs-task-events/README.md + some
+modifications.
+
 ## Usage
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

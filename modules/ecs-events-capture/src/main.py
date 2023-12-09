@@ -85,7 +85,7 @@ def main():
             date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
 
             created_at = datetime.strptime(
-                event_raw["detail"]["pullStoppedAt"], date_format
+                event_raw["detail"]["createdAt"], date_format
             )
             started_at = datetime.strptime(
                 event_raw["detail"]["startedAt"], date_format
