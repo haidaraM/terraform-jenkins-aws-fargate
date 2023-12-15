@@ -86,16 +86,15 @@ from [here](./docker/):
 - The times are in seconds and represent the difference between the creation and the start time of the task.
 - Number of runs: 16.
 
-| task_image             |                min_start_time |              max_start_time |                mean_start_time |               median_start_time |
-|:-----------------------|------------------------------:|----------------------------:|-------------------------------:|--------------------------------:|
-| controller (to update) |                   x -> 24.048 |                 x -> 36.474 |                   x -> 31.4392 |                    x -> 32.9275 |
-| agent                  | 16.835 -> 12.759: **-24.21%** | 22.204 -> 21.08: **-5.06%** | 18.7357 -> 15.1008: **-19.4%** | 18.6275 -> 14.3945: **-22.72%** |
-
+| image      |                min_start_time |                max_start_time |                mean_start_time |               median_start_time |
+|:-----------|------------------------------:|------------------------------:|-------------------------------:|--------------------------------:|
+| controller | 41.633 -> 24.048: **-42.23%** | 56.347 -> 36.474: **-35.27%** | 49.5134 -> 31.4392: **-36.5%** |  51.6065 -> 32.9275: **-36.2%** |
+| agent      | 16.835 -> 12.759: **-24.21%** |   22.204 -> 21.08: **-5.06%** | 18.7357 -> 15.1008: **-19.4%** | 18.6275 -> 14.3945: **-22.72%** |
 
 > Note that SOCI only works with the private ECR repositories at the moment.
 
 
-In a nutshell, **on average, the startup time of the controller and the agent are reduced by 21% and 24% respectively.**
+In a nutshell, **on average, the start time of the controller and the agent are reduced by 36.5% and 19.4% respectively.**
 
 For more information about SOCI, see the following links:
 
