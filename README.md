@@ -86,10 +86,21 @@ from [here](./docker/):
 - The times are in seconds and represent the difference between the creation and the start time of the task.
 - Number of runs: 16.
 
-| image      |                min_start_time |                max_start_time |                mean_start_time |               median_start_time |
-|:-----------|------------------------------:|------------------------------:|-------------------------------:|--------------------------------:|
-| controller | 41.633 -> 24.048: **-42.23%** | 56.347 -> 36.474: **-35.27%** | 49.5134 -> 31.4392: **-36.5%** |  51.6065 -> 32.9275: **-36.2%** |
-| agent      | 16.835 -> 12.759: **-24.21%** |   22.204 -> 21.08: **-5.06%** | 18.7357 -> 15.1008: **-19.4%** | 18.6275 -> 14.3945: **-22.72%** |
+The controller:
+
+|              | min_start_time | max_start_time | mean_start_time | median_start_time |
+|:-------------|---------------:|---------------:|----------------:|------------------:|
+| Without SOCI |         41.633 |         56.347 |         49.5134 |           51.6065 |
+| With SOCI    |         24.048 |         36.474 |         31.4392 |           32.9275 |
+| Diff         |    **-42.23%** |    **-35.27%** |      **-36.5%** |        **-36.2%** |
+
+The agent:
+
+|              | min_start_time | max_start_time | mean_start_time | median_start_time |
+|:-------------|---------------:|---------------:|----------------:|------------------:|
+| Without SOCI |         16.835 |         22.204 |         18.7357 |           18.6275 |
+| With SOCI    |         12.759 |          21.08 |         15.1008 |           14.3945 |
+| Diff         |    **-24.21%** |     **-5.06%** |      **-19.4%** |       **-22.72%** |
 
 > Note that SOCI only works with the private ECR repositories at the moment.
 
