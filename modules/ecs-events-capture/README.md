@@ -21,7 +21,22 @@ modifications.
 
 The scripts require installing the dependencies from `requirements.txt`.
 
-- [trigger-job.py](src/trigger-job.py) is a Python script that triggers a Jenkins job.
+- [restart-controller.py](src/restart-controller.py): Restarts the controller ECS Task.
+    ```
+    usage: restart-controller.py [-h] [--cluster-name CLUSTER_NAME] [--service-name SERVICE_NAME] [-i ITERATIONS]
+    
+    Restart service updates to trigger ECS events.
+    
+    options:
+      -h, --help            show this help message and exit
+      --cluster-name CLUSTER_NAME
+                            ECS cluster name. Default: jenkins-cluster
+      --service-name SERVICE_NAME
+                            ECS service name. Default: jenkins-controller
+      -i ITERATIONS, --iterations ITERATIONS
+                            Number of updates. Default: 16
+    ```
+- [trigger-job.py](src/trigger-job.py) is a Python script that triggers a Jenkins job a certain number of times.
     ```
     usage: trigger-job.py [-h] [-i ITERATIONS] -u USER -p PASSWORD -s SERVER job_name
     
