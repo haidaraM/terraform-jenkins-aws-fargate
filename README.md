@@ -78,29 +78,23 @@ To compare the startup time of the tasks, a local module [modules/ecs-events-cap
 used to capture the relevant ECS Task events in a CloudWatch Log Group. After some runs, you
 can run the Python script (check the [README](modules/ecs-events-capture/README.md) of the module).
 
-Here are some numbers (in seconds) in the tables below for the controller and the agent with the following images built
+Here are some numbers in the tables below for the controller and the agent with the following images built
 from [here](./docker/):
 
 - Controller version 2.433: 1.12 GB
 - Agent version 3192.v713e3b_039fb_e-4-alpine-jdk17: 0.315 GB
+- The times are in seconds and represent the difference between the creation and the start time of the task.
+- Number of runs: 16.
 
-**Without SOCI:**
-
-| task_image                                                   | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
-|:-------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
-| jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          1.204 |           2.15 |         1.66583 |            1.6445 |
-| jenkins-aws-fargate:2.433                                    |      12 |         15.132 |         25.139 |         20.5679 |            20.707 |
-
-**With SOCI:**
+| image      |                min_start_time |                max_start_time |                mean_start_time |               median_start_time |
+|:-----------|------------------------------:|------------------------------:|-------------------------------:|--------------------------------:|
+| controller | 41.633 -> 24.048: **-42.23%** | 56.347 -> 36.474: **-35.27%** | 49.5134 -> 31.4392: **-36.5%** |  51.6065 -> 32.9275: **-36.2%** |
+| agent      | 16.835 -> 12.759: **-24.21%** |   22.204 -> 21.08: **-5.06%** | 18.7357 -> 15.1008: **-19.4%** | 18.6275 -> 14.3945: **-22.72%** |
 
 > Note that SOCI only works with the private ECR repositories at the moment.
 
-| task_image                                                   | nb_runs | min_start_time | max_start_time | mean_start_time | median_start_time |
-|:-------------------------------------------------------------|--------:|---------------:|---------------:|----------------:|------------------:|
-| jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17 |      12 |          0.124 |          0.753 |         0.41075 |            0.3825 |
-| jenkins-controller:2.433                                     |      12 |         10.855 |         20.917 |         16.1846 |            16.278 |
 
-In a nutshell, **on average, the startup time of the controller and the agent are reduced by 21% and 75% respectively.**
+In a nutshell, **on average, the start time of the controller and the agent are reduced by 36.5% and 19.4% respectively.**
 
 For more information about SOCI, see the following links:
 
@@ -256,3 +250,4 @@ For more information about SOCI, see the following links:
 - [EFS IAM Authorization and access point](https://aws.amazon.com/blogs/aws/new-for-amazon-efs-iam-authorization-and-access-points/)
 - https://docs.aws.amazon.com/efs/latest/ug/accessing-fs-nfs-permissions.html
 - [Jenkins's architecture for scale](https://www.jenkins.io/doc/book/architecting-for-scale/#distributed-builds-architecture)
+
