@@ -8,8 +8,8 @@ To calculate the startup time, a Python script is used to get and parse the even
 ```shell
 cd src
 pip3 install -r requirements.txt
-export LOG_GROUP_NAME="" # The name of log group created by the module. See the Terraform output `log_group_name`
-python3 analyze-ecs-events.py
+# Make sure your AWS credentials are set up correctly
+python3 analyze-ecs-events.py /aws/events/jenkins-cluster/task-state-change
 ```
 
 Based on https://github.com/aws-samples/aws-fargate-seekable-oci-toolbox/blob/main/ecs-task-events/README.md + some
@@ -21,6 +21,18 @@ modifications.
 
 The scripts require installing the dependencies from `requirements.txt`.
 
+- [analyze-ecs-events.py](src/analyze-ecs-events.py):
+    ```
+    usage: analyze-ecs-events.py [-h] log_group_name
+    
+    Analyze ECS Events to determine some numbers about the ECS tasks start time
+    
+    positional arguments:
+      log_group_name  The name of the Cloudwatch log group to analyze.
+    
+    options:
+      -h, --help      show this help message and exit
+    ```
 - [restart-controller.py](src/restart-controller.py): Restarts the controller ECS Task.
     ```
     usage: restart-controller.py [-h] [--cluster-name CLUSTER_NAME] [--service-name SERVICE_NAME] [-i ITERATIONS]

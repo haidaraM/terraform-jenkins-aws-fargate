@@ -1,11 +1,26 @@
+import argparse
 import json
-import os
 import sys
 from datetime import datetime
 
 import boto3
 import pandas as pd
 from botocore.exceptions import ClientError
+
+
+def get_cli_args():
+    """
+    Get CLI args.
+    """
+    parser = argparse.ArgumentParser(
+        description="Analyze ECS Events to determine some numbers about the ECS tasks start time"
+    )
+    parser.add_argument(
+        "log_group_name",
+        help="The name of the Cloudwatch log group to analyze.",
+    )
+
+    return parser.parse_args()
 
 
 def get_all_log_streams(client, log_group_name, max_items=500):
@@ -42,21 +57,14 @@ def get_all_log_streams(client, log_group_name, max_items=500):
 
 
 def main():
+    args = get_cli_args()
     # Ensure the User has set the LOG GROUP NAME for the container.
-    if "LOG_GROUP_NAME" not in os.environ:
-        print("LOG_GROUP_NAME has not been set in environment variables")
-        sys.exit(1)
 
-    log_group_name = os.environ.get("LOG_GROUP_NAME")
+    log_group_name = args.log_group_name
     print("Using Log Group %s", log_group_name)
 
-    # Ensure the User has set the AWS REGION for the container.
-    if "AWS_REGION" not in os.environ:
-        print("AWS_REGION has not been set in environment variables")
-        sys.exit(1)
-
     # Get all the Log Streams from the Cloudwatch logs API
-    client = boto3.client("logs", region_name=os.environ.get("AWS_REGION"))
+    client = boto3.client("logs")
     print("Getting Log Streams for Log Group %s", log_group_name)
 
     streams = get_all_log_streams(client, log_group_name)
