@@ -88,7 +88,7 @@ from [here](./docker/):
 
 The controller:
 
-|              | min_start_time | max_start_time | mean_start_time | median_start_time |
+| Controller   | min_start_time | max_start_time | mean_start_time | median_start_time |
 |:-------------|---------------:|---------------:|----------------:|------------------:|
 | Without SOCI |         41.633 |         56.347 |         49.5134 |           51.6065 |
 | With SOCI    |         24.048 |         36.474 |         31.4392 |           32.9275 |
@@ -96,7 +96,7 @@ The controller:
 
 The agent:
 
-|              | min_start_time | max_start_time | mean_start_time | median_start_time |
+| Agent        | min_start_time | max_start_time | mean_start_time | median_start_time |
 |:-------------|---------------:|---------------:|----------------:|------------------:|
 | Without SOCI |         16.835 |         22.204 |         18.7357 |           18.6275 |
 | With SOCI    |         12.759 |          21.08 |         15.1008 |           14.3945 |
