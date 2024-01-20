@@ -1,13 +1,13 @@
 FROM --platform=linux/amd64 golang:1.20-bullseye as builder
 
 # Version of soci-snapshotter to build
-ARG SOCI_SNAPSHOTTER_VERSION=21ec5445ea5e0908861e60e92cbdcd70d3251c93
+ARG SOCI_SNAPSHOTTER_VERSION=v0.5.0
 # Install required dependencies to build: https://github.com/awslabs/soci-snapshotter/blob/main/docs/build.md
 RUN apt update && apt install -y zlib1g-dev
 
 # Install
-RUN git clone https://github.com/awslabs/soci-snapshotter && cd soci-snapshotter && \
-    git checkout $SOCI_SNAPSHOTTER_VERSION && make
+RUN git clone --depth 1 --branch $SOCI_SNAPSHOTTER_VERSION https://github.com/awslabs/soci-snapshotter && cd soci-snapshotter && \
+        make
 
 FROM --platform=linux/amd64 public.ecr.aws/amazonlinux/amazonlinux:2
 
