@@ -1,3 +1,9 @@
+# v2.3.0
+
+- feat(index-builder): Update to the SOCI to v0.5.0 + do not clone the whole repo when building the image
+- fix: Update how the start time were calculated + update the scripts (#9)
+- Docs update
+
 # v2.2.0
 
 - Add support for Fargate SOCI. See https://github.com/haidaraM/terraform-jenkins-aws-fargate/pull/7
