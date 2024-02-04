@@ -1,4 +1,4 @@
-# 3.0.0
+# v3.0.0
 
 - Simplify the architecture by using the service discovery and remove the NLB. Using an NLB is not really necessary
   since we can use the service discovery with CloudMap directly. This simplifies the architecture of the project.
