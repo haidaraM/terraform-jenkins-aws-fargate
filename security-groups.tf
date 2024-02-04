@@ -50,29 +50,6 @@ resource "aws_security_group_rule" "jenkins_controller_ingress_alb" {
   description              = "From ALB to Jenkins Controller listening port."
 }
 
-resource "aws_security_group_rule" "allow_agents_to_jks_jnlp_port" {
-  for_each          = var.private_subnets
-  security_group_id = aws_security_group.jenkins_controller_ecs_service.id
-  from_port         = var.controller_jnlp_port
-  to_port           = var.controller_jnlp_port
-  protocol          = "tcp"
-  type              = "ingress"
-  cidr_blocks       = ["${data.aws_network_interface.each_network_interface[each.key].private_ip}/32"]
-  description       = "From the NLB to the Jenkins Controller via JNLP and ENI ${data.aws_network_interface.each_network_interface[each.key].id}."
-}
-
-# When using a private nlb we need to have this rule for nlb health check to work.
-resource "aws_security_group_rule" "from_private_nlb_network_interfaces" {
-  for_each          = var.private_subnets
-  security_group_id = aws_security_group.jenkins_controller_ecs_service.id
-  from_port         = var.controller_listening_port
-  to_port           = var.controller_listening_port
-  protocol          = "tcp"
-  type              = "ingress"
-  cidr_blocks       = ["${data.aws_network_interface.each_network_interface[each.key].private_ip}/32"]
-  description       = "From the NLB to the Jenkins Controller via HTTP and ENI ${data.aws_network_interface.each_network_interface[each.key].id}. Required for health check."
-}
-
 resource "aws_security_group_rule" "controller_egress_all" {
   security_group_id = aws_security_group.jenkins_controller_ecs_service.id
   from_port         = 0
@@ -115,4 +92,24 @@ resource "aws_security_group_rule" "allow_jenkins_to_efs" {
   type                     = "ingress"
   description              = "Jenkins Controller access to EFS."
   source_security_group_id = aws_security_group.jenkins_controller_ecs_service.id
+}
+
+resource "aws_security_group_rule" "jenkins_controller_ingress_vpc_http" {
+  security_group_id = aws_security_group.jenkins_controller_ecs_service.id
+  from_port         = var.controller_listening_port
+  to_port           = var.controller_listening_port
+  protocol          = "tcp"
+  type              = "ingress"
+  cidr_blocks       = data.aws_vpc.vpc.cidr_block_associations[*].cidr_block
+  description       = "From the VPC to Jenkins Controller"
+}
+
+resource "aws_security_group_rule" "jenkins_controller_ingress_vpc_jnlp" {
+  security_group_id = aws_security_group.jenkins_controller_ecs_service.id
+  from_port         = var.controller_jnlp_port
+  to_port           = var.controller_jnlp_port
+  protocol          = "tcp"
+  type              = "ingress"
+  cidr_blocks       = data.aws_vpc.vpc.cidr_block_associations[*].cidr_block
+  description       = "From the VPC to Jenkins Controller"
 }
