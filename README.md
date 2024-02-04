@@ -169,14 +169,9 @@ For more information about SOCI, see the following links:
 | [aws_iam_role_policy_attachment.agents_execution_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.controller_ecs_task](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.controller_execution_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_lb.nlb_agents](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb) | resource |
-| [aws_lb_listener.agents_http_listener](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
-| [aws_lb_listener.agents_jnlp_listener](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
 | [aws_lb_listener.controller_http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
 | [aws_lb_listener.controller_http_redirect](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
 | [aws_lb_listener.controller_https](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
-| [aws_lb_target_group.nlb_agents_to_controller_http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group) | resource |
-| [aws_lb_target_group.nlb_agents_to_controller_jnlp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group) | resource |
 | [aws_route53_record.alb_dns_record](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
 | [aws_route53_record.certificate_validation_record](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
 | [aws_s3_bucket.jenkins_conf_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
@@ -190,12 +185,14 @@ For more information about SOCI, see the following links:
 | [aws_security_group_rule.alb_egress_all](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.alb_ingress_http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.alb_ingress_https](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
-| [aws_security_group_rule.allow_agents_to_jks_jnlp_port](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.allow_jenkins_to_efs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.controller_egress_all](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
-| [aws_security_group_rule.from_private_nlb_network_interfaces](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.jenkins_agent_egress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.jenkins_controller_ingress_alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.jenkins_controller_ingress_vpc_http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.jenkins_controller_ingress_vpc_jnlp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_service_discovery_private_dns_namespace.namespace](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/service_discovery_private_dns_namespace) | resource |
+| [aws_service_discovery_service.service_discovery](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/service_discovery_service) | resource |
 | [aws_sns_topic.alarms_topic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [random_password.admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [terraform_data.build_and_push_soci_indexes](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
@@ -204,14 +201,14 @@ For more information about SOCI, see the following links:
 | [aws_caller_identity.caller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.controller_ecs_task](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.ecs_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_network_interface.each_network_interface](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/network_interface) | data source |
 | [aws_route53_zone.dns_zone](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) | data source |
+| [aws_vpc.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
 
 ### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | Private subnets to deploy Jenkins and the internal NLB | `set(string)` | n/a | yes |
+| <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | Private subnets to deploy the Jenkins controller | `set(string)` | n/a | yes |
 | <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | Public subnets to deploy the load balancer | `set(string)` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC id | `string` | n/a | yes |
 | <a name="input_agent_docker_image"></a> [agent\_docker\_image](#input\_agent\_docker\_image) | Docker image to use for the example agent. See: https://hub.docker.com/r/jenkins/inbound-agent/ | `string` | `"elmhaidara/jenkins-alpine-agent-aws:3192.v713e3b_039fb_e-4-alpine-jdk17"` | no |
@@ -238,7 +235,7 @@ For more information about SOCI, see the following links:
 | <a name="input_route53_subdomain"></a> [route53\_subdomain](#input\_route53\_subdomain) | The subdomain to use for Jenkins Controller. Used when var.route53\_zone\_name is not empty | `string` | `"jenkins"` | no |
 | <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | A Route53 zone name to use to create a DNS record for the Jenkins Controller. Required for HTTPs. | `string` | `""` | no |
 | <a name="input_soci"></a> [soci](#input\_soci) | Seekable OCI image config. See https://aws.amazon.com/fr/blogs/aws/aws-fargate-enables-faster-container-startup-using-seekable-oci/.<br>If enabled, Terraform will create two ECR repositories (one for the controller and one for the agent), push the images to ECR (from the default images in Dockerhub),<br>build the SOCI indexes and push them to ECR as well. As such, you need to have Docker installed on your machine and be able to run it in privileged mode.<br><br>You can optionally build the images and their index yourself, push them to ECR and update the variables `controller_docker_image` and<br>`controller_docker_image` (set enabled to `false` in this case). See https://github.com/aws-samples/aws-fargate-seekable-oci-toolbox/blob/main/containerized-index-builder/README.md.<br>This variable is just a convenient way to do it from Terraform. Prefer using the lambda function to build the index: https://github.com/aws-ia/cfn-ecr-aws-soci-index-builder. | <pre>object({<br>    enabled             = optional(bool, false)                                   # Whether to enable SOCI or not<br>    env_vars            = optional(map(string), {})                               # Env vars to pass to the Docker related commands<br>    index_builder_image = optional(string, "elmhaidara/soci-index-builder:0.5.0") # Index builder image to use<br>  })</pre> | `{}` | no |
-| <a name="input_target_groups_deregistration_delay"></a> [target\_groups\_deregistration\_delay](#input\_target\_groups\_deregistration\_delay) | Amount of time for ALB/NLB to wait before changing the state of a deregistering target from draining to unused. It has a direct impact on the time it takes to run the controller. | `number` | `10` | no |
+| <a name="input_target_groups_deregistration_delay"></a> [target\_groups\_deregistration\_delay](#input\_target\_groups\_deregistration\_delay) | Amount of time for ALB to wait before changing the state of a deregistering target from draining to unused. It has a direct impact on the time it takes to run the controller. | `number` | `10` | no |
 
 ### Outputs
 

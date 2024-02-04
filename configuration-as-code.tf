@@ -19,7 +19,7 @@ locals {
     jnlp_port                        = var.controller_jnlp_port
     jenkins_controller_num_executors = var.controller_num_executors
     jenkins_public_url               = local.jenkins_public_url
-    jenkins_nlb_url                  = "http://${aws_lb.nlb_agents.dns_name}"
+    jenkins_private_url              = "http://${aws_service_discovery_service.service_discovery.name}.${aws_service_discovery_private_dns_namespace.namespace.name}:${var.controller_listening_port}/"
     fargate_platform_version         = var.fargate_platform_version
     admin_password                   = random_password.admin_password.result
   })

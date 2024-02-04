@@ -117,6 +117,28 @@ resource "aws_ecs_task_definition" "jenkins_controller" {
   ]
 }
 
+resource "aws_service_discovery_private_dns_namespace" "namespace" {
+  name        = "jenkins.local"
+  description = "Namespace for Jenkins"
+  vpc         = var.vpc_id
+}
+
+resource "aws_service_discovery_service" "service_discovery" {
+  name          = "controller"
+  description   = "Service discovery for the Jenkins controller"
+  force_destroy = true
+
+  dns_config {
+    namespace_id   = aws_service_discovery_private_dns_namespace.namespace.id
+    routing_policy = "MULTIVALUE"
+
+    dns_records {
+      ttl  = 60
+      type = "A"
+    }
+  }
+}
+
 resource "aws_ecs_service" "jenkins_controller" {
   name            = "jenkins-controller"
   cluster         = aws_ecs_cluster.cluster.id
@@ -128,6 +150,15 @@ resource "aws_ecs_service" "jenkins_controller" {
 
   deployment_minimum_healthy_percent = var.controller_deployment_percentages.min
   deployment_maximum_percent         = var.controller_deployment_percentages.max
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.service_discovery.arn
+  }
 
   network_configuration {
     security_groups  = [aws_security_group.jenkins_controller_ecs_service.id]
@@ -142,27 +173,11 @@ resource "aws_ecs_service" "jenkins_controller" {
     container_port   = var.controller_listening_port
   }
 
-  # nlb http for agents
-  load_balancer {
-    target_group_arn = aws_lb_target_group.nlb_agents_to_controller_http.arn
-    container_name   = local.jenkins_controller_container_name
-    container_port   = var.controller_listening_port
-  }
-
-  # nlb jnlp for agents
-  load_balancer {
-    target_group_arn = aws_lb_target_group.nlb_agents_to_controller_jnlp.arn
-    container_name   = local.jenkins_controller_container_name
-    container_port   = var.controller_jnlp_port
-  }
-
-  # the listeners that attach the target groups to the load balancers need to be created first. Otherwise, there will
+  # The listeners that attach the target groups to the load balancers need to be created first. Otherwise, there will
   # be an error saying that the target group is not attached to a load balancer.
   depends_on = [
     aws_lb_listener.controller_http,
     aws_lb_listener.controller_https,
-    aws_lb_listener.agents_http_listener,
-    aws_lb_listener.agents_jnlp_listener
   ]
 
   lifecycle {

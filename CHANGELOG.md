@@ -1,3 +1,9 @@
+# 3.0.0
+
+- Simplify the architecture by using the service discovery and remove the NLB. Using an NLB is not really necessary
+  since we can use the service discovery with CloudMap directly. This simplifies the architecture of the project.
+- Enable the circuit breaker on the ECS service. 
+
 # v2.3.0
 
 - feat(index-builder): Update to the SOCI to v0.5.0 + do not clone the whole repo when building the image

@@ -6,6 +6,10 @@ data "aws_route53_zone" "dns_zone" {
   private_zone = false
 }
 
+data "aws_vpc" "vpc" {
+  id = var.vpc_id
+}
+
 data "aws_iam_policy_document" "ecs_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -85,23 +89,3 @@ data "aws_iam_policy_document" "controller_ecs_task" {
   }
 }
 
-# Getting the network interface attached to the nlb. Their IP address will be used in the security group attached to the
-# task according to the best practice
-# https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html#target-security-groups
-data "aws_network_interface" "each_network_interface" {
-  for_each = var.private_subnets
-
-  filter {
-    name = "description"
-    /*
-    Filter with nlb id in the description.
-    Example of description: ELB net/nlb-jenkins-agents/c13704bf0d2c7995
-    */
-    values = ["*${split("/", aws_lb.nlb_agents.arn)[3]}*"]
-  }
-
-  filter {
-    name   = "subnet-id"
-    values = [each.key]
-  }
-}

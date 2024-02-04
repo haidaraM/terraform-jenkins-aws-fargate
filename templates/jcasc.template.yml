@@ -8,7 +8,7 @@ jenkins:
   clouds:
     - ecs:
         cluster: "${ecs_cluster_arn}"
-        jenkinsUrl: "${jenkins_nlb_url}/"
+        jenkinsUrl: "${jenkins_private_url}"
         name: "fargate"
         regionName: "${region_name}"
         credentialsId: "" # not needed but required for jcasc plugin. A role will be used to access the resources.
