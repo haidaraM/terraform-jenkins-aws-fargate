@@ -1,9 +1,10 @@
-# v3.0.0
+# v3.0.0 (unreleased)
 
 - Simplify the architecture by using the service discovery and remove the NLB. Using an NLB is not really necessary
   since we can use the service discovery with CloudMap directly. This simplifies the architecture of the project. See
   #10.
 - Enable the circuit breaker on the ECS service.
+- Update Jenkins to `2.443` and the plugins.
 
 # v2.3.0
 

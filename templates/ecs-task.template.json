@@ -10,10 +10,12 @@
     "portMappings": [
       {
         "containerPort": ${jenkins_http_port},
+        "hostPort": ${jenkins_http_port},
         "protocol": "tcp"
       },
       {
         "containerPort": ${jenkins_jnlp_port},
+        "hostPort": ${jenkins_jnlp_port},
         "protocol": "tcp"
       }
     ],
