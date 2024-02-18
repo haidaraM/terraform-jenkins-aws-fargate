@@ -194,7 +194,7 @@ resource "aws_acm_certificate" "controller_certificate" {
   count             = var.route53_zone_name != "" ? 1 : 0
   domain_name       = local.jenkins_host
   validation_method = "DNS"
-  tags              = merge({ Name = local.jenkins_host }, var.default_tags)
+  tags              = { Name = local.jenkins_host }
 
   lifecycle {
     create_before_destroy = true
